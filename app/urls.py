@@ -20,4 +20,8 @@ from . import views
 urlpatterns = [
     path('base/',views.base,name='base'),
     path('login/',views.login,name='login'),
+    path('dashboard/',views.dashboard,name='dashboard'),
+    path('exchange/',views.exchange,name='exchange'),
+    path('exchangeinfo/<int:exid>',views.exchangeinfo,name='exchangeinfo'),
+
 ]

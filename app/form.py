@@ -16,3 +16,15 @@ class LoginForm(forms.Form):
         if len(user) == 0:
             raise forms.ValidationError('用户%s不存在' % value)
         return value
+class ExchangeForm(forms.ModelForm):
+    class Meta:
+        model=Exchange
+        fields=['code','name','status','apikey','secretkey']
+    def clean_status(self):
+        statusvalue= self.cleaned_data.get('status')
+        apikeyvalue = self.cleaned_data.get('apikey')
+        secretkeyvalue = self.cleaned_data.get('secretkey')
+        if apikeyvalue is None or secretkeyvalue is None and statusvalue is True:
+            raise forms.ValidationError('API_KEY或SECRET_KEY未设置，无法启用此交易所')
+        return statusvalue
+

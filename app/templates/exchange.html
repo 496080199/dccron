@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+
+{% block main %}
+
+
+        <div class="row">
+        <div class="col-xs-12">
+          <div class="box">
+            <div class="box-header">
+              <h3 class="box-title">交易所列表</h3>
+
+              <div class="box-tools">
+                <div class="input-group input-group-sm" style="width: 150px;">
+                  <input type="text" name="table_search" class="form-control pull-right" placeholder="搜索">
+
+                  <div class="input-group-btn">
+                    <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body table-responsive no-padding">
+              <table class="table table-hover">
+                <tr>
+                  <th>ID</th>
+                  <th>交易所代码</th>
+                  <th>名称</th>
+                  <th>状态</th>
+                  <th></th>
+                </tr>
+                {% for exchange in exchagnes %}
+                 <tr>
+                  <td>{{ exchange.id }}</td>
+                  <td>{{ exchange.code }}</td>
+                  <td>{{ exchange.name }}</td>
+                  <td>{% if exchange.status == True %}<span class="label label-success">启用</span>{% else %}<span class="label label-danger">禁用</span>{% endif %}</td>
+                  <td><a href="{% url 'exchangeinfo' exchange.id %}"><span class="label label-info">配置</span></a></td>
+                </tr>
+                {% endfor %}
+
+              </table>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+        </div>
+      </div>
+
+{% endblock %}

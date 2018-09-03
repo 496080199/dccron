@@ -1,9 +1,12 @@
-from .form import *
+
 from django.shortcuts import render
 from django.contrib import auth
 
 from django.urls import reverse
 from django.shortcuts import redirect
+
+from .form import *
+from .models import *
 
 
 # Create your views here.
@@ -32,3 +35,16 @@ def login(request):
 
 def dashboard(request):
     return render(request, 'dashboard.html', {})
+
+def exchange(request):
+    exchanges=Exchange.objects.all()
+
+    return render(request, 'exchange.html', {'exchagnes':exchanges})
+
+def exchangeinfo(request,exid):
+    exchange=Exchange.objects.get(pk=exid)
+    exchangeform=ExchangeForm(instance=exchange)
+
+    return render(request, 'exchangeinfo.html', {'exchangeform':exchangeform})
+
+

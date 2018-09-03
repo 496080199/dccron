@@ -6,4 +6,22 @@
     password: pbkdf2_sha256$120000$dOGBjy8h1dc8$N2OQ02svqJ58/3BclvmvsQlRLaWGZTXqY39Y56bL3D0=
     is_superuser: 1
     is_staff: 1
+- model: app.Exchange
+  pk: 1
+  fields:
+    code: huobipro
+    name: 火币
+    status: false
+- model: app.Exchange
+  pk: 2
+  fields:
+    code: bianace
+    name: 币安
+    status: false
+- model: app.Exchange
+  pk: 3
+  fields:
+    code: okex
+    name: OKEX
+    status: false
 
