@@ -1,0 +1,9 @@
+- model: auth.User
+  pk: 1
+  fields:
+    username: admin
+    email: admin@admin.com
+    password: pbkdf2_sha256$120000$dOGBjy8h1dc8$N2OQ02svqJ58/3BclvmvsQlRLaWGZTXqY39Y56bL3D0=
+    is_superuser: 1
+    is_staff: 1
+
