@@ -15,7 +15,7 @@
 - model: app.Exchange
   pk: 2
   fields:
-    code: bianace
+    code: binance
     name: 币安
     status: false
 - model: app.Exchange

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block main %}
+
+    <div class="box box-success">
+            <div class="box-header with-border">
+              <h3 class="box-title">交易对列表</h3>
+                <button class="btn btn-success" onclick="javascript:window.location.href='{% url 'symbolupdate' exid %}'">更新列表</button>
+                <div class="pull-right">
+                    <form action="#" method="get">
+                        <label><input type="search" class="input-sm" placeholder="" aria-controls="example1"name="search"><button type="submit" class="btn btn-primary">搜索</button></label>
+                    </form>
+                </div>
+
+            </div>
+            <!-- /.box-header -->
+            <div class="box">
+            <div class="box-body">
+              <table class="table table-bordered">
+                <tbody><tr>
+                  <th style="width: 10px">#</th>
+                  <th>对名称</th>
+                  <th>操作</th>
+                </tr>
+                {% for symbol in symbols %}
+                    <tr>
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+                        <td>
+                            {{ symbol }}
+                        </td>
+                        <td>
+                            添加
+                        </td>
+                    </tr>
+                {% endfor %}
+
+              </tbody></table>
+            </div>
+
+
+                <div class="box-footer clearfix dataTables_paginate paging_simple_numbers" >
+                    <ul class="pagination">
+                        {% for page_number in symbols.paginator.page_range %}
+                            {% ifequal page_number  symbols.number %}
+                                <li class="paginate_button active"><a href="#"><strong>{{ page_number }}</strong></a></li>
+                            {% else %}
+                                <li class="paginate_button "><a href="?page={{ page_number }}">{{ page_number }}</a></li>
+                            {% endifequal %}
+                        {% endfor %}
+                    </ul>
+                </div>
+
+            <!-- /.box-body -->
+          </div>
+            <!-- /.box-body -->
+          </div>
+{% endblock %}

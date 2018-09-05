@@ -23,5 +23,9 @@ urlpatterns = [
     path('dashboard/',views.dashboard,name='dashboard'),
     path('exchange/',views.exchange,name='exchange'),
     path('exchangeinfo/<int:exid>',views.exchangeinfo,name='exchangeinfo'),
+    path('symbollist/<int:exid>',views.symbollist,name='symbollist'),
+    path('symbol/',views.symbol,name='symbol'),
+    path('symbolupdate/<int:exid>',views.symbolupdate,name='symbolupdate'),
+    path('symbolajax/<str:ecode>',views.symbolajax,name='symbolajax'),
 
 ]

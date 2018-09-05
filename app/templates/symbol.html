@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+
+{% block main %}
+
+
+    <div class="box box-success">
+            <div class="box-header with-border">
+              <h3 class="box-title">交易对</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body" id="last">
+              <form role="form" >
+                <!-- text input -->
+                <div class="form-group">
+                  <label>选择交易所</label>
+                  <select class="form-control" id="es">
+                    {% for ex in exchanges %}
+                         <option value="{{ ex.code }}">{{ ex.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                 <button type="submit" class="btn btn-primary" onclick="getsymbol()">查询</button>
+                 <button class="btn btn-success">更新交易对</button>
+
+
+              </form>
+            </div>
+            <div class="box">
+            <div class="box-body">
+              <table class="table table-bordered">
+                <tbody><tr>
+                  <th style="width: 10px">#</th>
+                  <th>对名称</th>
+                </tr>
+                <tr>
+                  <td>1.</td>
+                  <td>ETH/USDT</td>
+
+                </tr>
+
+              </tbody></table>
+            </div>
+            <!-- /.box-body -->
+          </div>
+            <!-- /.box-body -->
+          </div>
+<script>
+
+</script>
+    <script>
+        function getsymbol() {
+            var es=$("#es").val();
+            $.ajax({
+                type: "get",
+                url: "/app/symbolajax/",
+                dataType: "json",
+                contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                data:{
+                    'es':es
+                     },
+                success: function (data) {
+                    if (data.status == 0) {
+                        var result =data.data;
+                        var finalHtml ="<div class=\"box\">\n" +
+                            "            <div class=\"box-body\">\n" +
+                            "              <table class=\"table table-bordered\">\n" +
+                            "                <tbody><tr>\n" +
+                            "                  <th style=\"width: 10px\">#</th>\n" +
+                            "                  <th>对名称</th>\n" +
+                            "                </tr>"
+                        for (var i=0; i<result.length; i++) {
+                            var num= i+1
+                            finalHtml+="<tr>\n" +
+                                "                  <td>"+num+"</td>\n" +
+                                "                  <td>"+result[i]+"</td>\n" +
+                                "\n" +
+                                "                </tr>"
+                        }
+                        finalHtml+="</tbody></table>\n" +
+                            "            </div>\n" +
+                            "            <!-- /.box-body -->\n" +
+                            "          </div>"
+                        $('#last').append(finalHtml);
+
+                    } else {
+                        var finalHtml="<label>无数据</label>";
+                        $('#last').append(finalHtml);
+                    }
+
+                }
+                }
+
+            )
+
+        }
+     </script>
+
+{% endblock %}
