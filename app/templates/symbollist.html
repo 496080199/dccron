@@ -3,8 +3,8 @@
 
     <div class="box box-success">
             <div class="box-header with-border">
-              <h3 class="box-title">交易对列表</h3>
-                <button class="btn btn-success" onclick="javascript:window.location.href='{% url 'symbolupdate' exid %}'">更新列表</button>
+              <h3 class="box-title">{{ exchange.name }}交易对列表</h3>
+                <button class="btn btn-success" onclick="javascript:window.location.href='{% url 'symbolupdate' exchange.id %}'">更新列表</button>
                 <div class="pull-right">
                     <form action="#" method="get">
                         <label><input type="search" class="input-sm" placeholder="" aria-controls="example1"name="search"><button type="submit" class="btn btn-primary">搜索</button></label>
@@ -27,10 +27,12 @@
                             {{ forloop.counter }}
                         </td>
                         <td>
-                            {{ symbol }}
+                            {{ symbol|safe }}
                         </td>
                         <td>
-                            添加
+
+                            <a href="{% url 'symboladd' exchange.id symbol %}">添加</a>
+
                         </td>
                     </tr>
                 {% endfor %}

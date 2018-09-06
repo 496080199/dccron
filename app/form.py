@@ -17,14 +17,21 @@ class LoginForm(forms.Form):
             raise forms.ValidationError('用户%s不存在' % value)
         return value
 class ExchangeForm(forms.ModelForm):
+    apikey=forms.CharField(required=False)
+    secretkey = forms.CharField(required=False)
     class Meta:
         model=Exchange
         fields=['code','name','status','apikey','secretkey']
-    def clean_status(self):
-        statusvalue= self.cleaned_data.get('status')
-        apikeyvalue = self.cleaned_data.get('apikey')
-        secretkeyvalue = self.cleaned_data.get('secretkey')
-        if apikeyvalue is None or secretkeyvalue is None and statusvalue is True:
-            raise forms.ValidationError('API_KEY或SECRET_KEY未设置，无法启用此交易所')
-        return statusvalue
+    def clean(self):
+        cleaned_data = super(ExchangeForm, self).clean()
+        statusvalue= cleaned_data.get('status')
+        apikeyvalue = cleaned_data.get('apikey')
+        secretkeyvalue = cleaned_data.get('secretkey')
+        if statusvalue:
+            if apikeyvalue == '' or secretkeyvalue == '':
+                raise forms.ValidationError('API_KEY或SECRET_KEY未设置，无法启用此交易所')
+
+        return cleaned_data
+
+
 

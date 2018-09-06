@@ -124,7 +124,7 @@
           </a>
           <ul class="treeview-menu">
             <li><a href="{% url 'exchange' %}"><i class="fa fa-circle-o"></i>交易所</a></li>
-            <li><a href="index.html"><i class="fa fa-circle-o"></i>交易对</a></li>
+            <li><a href="{% url 'symbol' %}"><i class="fa fa-circle-o"></i>交易对管理</a></li>
           </ul>
         </li>
         <li class="active treeview menu-open">
@@ -147,9 +147,18 @@
  <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <section class="content-header">
+      <section class="content-header">
+          {% if messages %}
 
-    </section>
+
+              <div class="alert alert-info alert-dismissible">
+                  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                      {% for message in messages %}
+                          <p>{{ message }}</p>
+                      {% endfor %}
+              </div>
+          {% endif %}
+      </section>
 
     <!-- Main content -->
 

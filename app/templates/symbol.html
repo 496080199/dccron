@@ -6,23 +6,26 @@
 
     <div class="box box-success">
             <div class="box-header with-border">
-              <h3 class="box-title">交易对</h3>
+              <h3 class="box-title">交易对管理</h3>
             </div>
             <!-- /.box-header -->
             <div class="box-body" id="last">
-              <form role="form" >
+              <form role="form" action="#" method="get">
                 <!-- text input -->
                 <div class="form-group">
                   <label>选择交易所</label>
-                  <select class="form-control" id="es">
+                  <select class="" name="select">
                     {% for ex in exchanges %}
-                         <option value="{{ ex.code }}">{{ ex.name }}</option>
+                         <option value="{{ ex.id }}">{{ ex.name }}</option>
                     {% endfor %}
                   </select>
                 </div>
+                <div class="pull-left">
+                    <button type="submit" class="btn btn-primary" >筛选</button>
+                   <button type="button" class="btn btn-info" onclick="javascript:window.location.href='{% url 'symbol' %}'">全部</button>
+                </div>
 
-                 <button type="submit" class="btn btn-primary" onclick="getsymbol()">查询</button>
-                 <button class="btn btn-success">更新交易对</button>
+
 
 
               </form>
@@ -32,69 +35,36 @@
               <table class="table table-bordered">
                 <tbody><tr>
                   <th style="width: 10px">#</th>
-                  <th>对名称</th>
+                  <th>交易所</th>
+                  <th>交易对</th>
+                  <th>操作</th>
                 </tr>
-                <tr>
-                  <td>1.</td>
-                  <td>ETH/USDT</td>
+                {% for symbol in symbols %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ symbol.exchange.name }}</td>
+                        <td>{{ symbol.name }}</td>
+                        <td><button type="button" class="btn btn-danger btn-sm" onclick="javascript:if (confirm('确定要删除?')) location.href='{% url 'symboldel' symbol.exchange_id symbol.name %}'">删除</button></td>
 
-                </tr>
+                    </tr>
+                {% endfor %}
 
               </tbody></table>
             </div>
+            <div class="box-footer clearfix dataTables_paginate paging_simple_numbers" >
+                    <ul class="pagination">
+                        {% for page_number in symbols.paginator.page_range %}
+                            {% ifequal page_number  symbols.number %}
+                                <li class="paginate_button active"><a href="#"><strong>{{ page_number }}</strong></a></li>
+                            {% else %}
+                                <li class="paginate_button "><a href="?page={{ page_number }}">{{ page_number }}</a></li>
+                            {% endifequal %}
+                        {% endfor %}
+                    </ul>
+                </div>
             <!-- /.box-body -->
           </div>
             <!-- /.box-body -->
           </div>
-<script>
-
-</script>
-    <script>
-        function getsymbol() {
-            var es=$("#es").val();
-            $.ajax({
-                type: "get",
-                url: "/app/symbolajax/",
-                dataType: "json",
-                contentType: "application/x-www-form-urlencoded; charset=utf-8",
-                data:{
-                    'es':es
-                     },
-                success: function (data) {
-                    if (data.status == 0) {
-                        var result =data.data;
-                        var finalHtml ="<div class=\"box\">\n" +
-                            "            <div class=\"box-body\">\n" +
-                            "              <table class=\"table table-bordered\">\n" +
-                            "                <tbody><tr>\n" +
-                            "                  <th style=\"width: 10px\">#</th>\n" +
-                            "                  <th>对名称</th>\n" +
-                            "                </tr>"
-                        for (var i=0; i<result.length; i++) {
-                            var num= i+1
-                            finalHtml+="<tr>\n" +
-                                "                  <td>"+num+"</td>\n" +
-                                "                  <td>"+result[i]+"</td>\n" +
-                                "\n" +
-                                "                </tr>"
-                        }
-                        finalHtml+="</tbody></table>\n" +
-                            "            </div>\n" +
-                            "            <!-- /.box-body -->\n" +
-                            "          </div>"
-                        $('#last').append(finalHtml);
-
-                    } else {
-                        var finalHtml="<label>无数据</label>";
-                        $('#last').append(finalHtml);
-                    }
-
-                }
-                }
-
-            )
-
-        }
-     </script>
 
 {% endblock %}
