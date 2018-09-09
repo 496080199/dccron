@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.shortcuts import redirect
 from django.http import HttpResponse
+from django.core import serializers
 import json
 import ccxt
 import re
@@ -72,7 +73,8 @@ def timetoorder(exid,cid,symbol,amount,sellpercent):
 
 ####
 def castaddorchange(request):
-    cid=request.GET['cid']
+    exchanges=Exchange.objects.all()
+    cid = request.GET.get('cid')
     if cid:
         cast=Cast.objects.get(pk=cid)
         castform = CastForm(instance=cast)
@@ -80,7 +82,7 @@ def castaddorchange(request):
         castform=CastForm()
     if request.method=='POST':
         pass
-    return render(request, 'castinfo.html', {})
+    return render(request, 'castinfo.html', {'castform':castform,'exchanges':exchanges})
 def castload(request,cid):
     cast=Cast.objects.get(pk=cid)
     job=scheduler.get_job(job_id=str(cid))
@@ -265,7 +267,13 @@ def symbol(request):
 
     return render(request, 'symbol.html',{'exchanges':exchanges,'symbols':symbols})
 
+def symbolselect(request,exid):
+    ajax_symbols=None
+    if request.method == 'POST':
+        ajax_symbols=serializers.serialize('json',Symbol.objects.filter(exchange_id=exid))
 
+
+    return HttpResponse(ajax_symbols)
 
 def symbolajax(request,ecode):
     symbol=Symbol.objects.filter(ecode__exact=ecode)[0]

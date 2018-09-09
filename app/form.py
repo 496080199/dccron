@@ -35,6 +35,6 @@ class ExchangeForm(forms.ModelForm):
 class CastForm(forms.ModelForm):
     class Meta:
         model=Cast
-        fields = ['name', 'minute', 'hour', 'day','exid','symbol','sellpercent']
+        fields = ['name', 'minute', 'hour', 'day','exid','symbol','amount','sellpercent']
 
 
