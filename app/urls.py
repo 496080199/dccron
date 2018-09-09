@@ -28,6 +28,7 @@ urlpatterns = [
     path('symboladd/<int:exid>/<slug:symbol>', views.symboladd, name='symboladd'),
     path('symboldel/<int:exid>/<slug:symbol>', views.symboldel, name='symboldel'),
     path('symbol/', views.symbol, name='symbol'),
+    path('cast/', views.cast, name='cast'),
 
     path('symbolajax/<str:ecode>', views.symbolajax, name='symbolajax'),
 

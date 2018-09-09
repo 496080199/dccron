@@ -13,7 +13,6 @@ import ccxt
 import re
 from decimal import Decimal
 
-e
 
 from .form import *
 from .models import *
@@ -30,20 +29,20 @@ scheduler.add_jobstore(DjangoJobStore(), "default")
 scheduler.start()
 
 
-def writetasklog(tid,content):
-    tasklog = Tasklog.objects.create(task_id=tid)
-    tasklog.content = content
-    tasklog.save()
+def writecastlog(cid,content):
+    castlog = Castlog.objects.create(cast_id=cid)
+    castlog.content = content
+    castlog.save()
 
-def timetoorder(exid,tid,symbol,amount,sellpercent):
-    task = Task.objects.get(pk=tid)
+def timetoorder(exid,cid,symbol,amount,sellpercent):
+    cast = Cast.objects.get(pk=cid)
     exchange = Exchange.objects.get(pk=exid)
     ex = eval("ccxt." + exchange.code + "()")
     ex.apiKey = exchange.apikey
     ex.secret = exchange.secretkey
     ex.options['createMarketBuyOrderRequiresPrice'] = False
     try:
-        cost=task.cost
+        cost=cast.cost
         firstsymbol=symbol.split('_')[0]
         quatity=Decimal(ex.fetchbalance()[firstsymbol]['free'])
         orderbook = ex.fetch_order_book(symbol=symbol)
@@ -54,59 +53,84 @@ def timetoorder(exid,tid,symbol,amount,sellpercent):
             sellorderdata=exchange.create_market_sell_order(symbol=symbol, amount=quatity)
             if sellorderdata['info']['status'] == 'ok':
                 content='定投收益已达到'+sellpercent+'%,成功卖出'
-                writetasklog(tid,content)
+                writecastlog(cid,content)
     except:
         content = '定投卖出异常'
-        writetasklog(tid, content)
+        writecastlog(cid, content)
         pass
 
     try:
         buyorderdata=ex.create_market_buy_order(symbol=symbol, amount=amount)
         if buyorderdata['info']['status'] == 'ok':
-            task.cost+=amount
+            cast.cost+=amount
             content = '定投成功买入'+str(amount)+'金额的'+str(symbol.split('_')[1])
-            writetasklog(tid, content)
+            writecastlog(cid, content)
     except:
         content = '定投买入异常'
-        writetasklog(tid, content)
+        writecastlog(cid, content)
         pass
 
 ####
-def taskadd(request):
+def castaddorchange(request):
+    cid=request.GET['cid']
+    if cid:
+        cast=Cast.objects.get(pk=cid)
+        castform = CastForm(instance=cast)
+    else:
+        castform=CastForm()
     if request.method=='POST':
         pass
-def taskload(request,tid):
-    task=Task.objects.get(pk=tid)
-    job=scheduler.get_job(job_id=str(tid))
+    return render(request, 'castinfo.html', {})
+def castload(request,cid):
+    cast=Cast.objects.get(pk=cid)
+    job=scheduler.get_job(job_id=str(cid))
     if job:
-        scheduler.reschedule_job("cron", id=str(tid), day=task.day,hour=task.hour, minute=task.minute, second=0, kwargs={'exid': task.exid,'tid':tid,'symbol':task.symbol,'amount':task.amount,'sellpercent':task.sellpercent})
+        scheduler.reschedule_job("cron", id=str(cid), day=cast.day,hour=cast.hour, minute=cast.minute, second=0, kwargs={'exid': cast.exid,'cid':cid,'symbol':cast.symbol,'amount':cast.amount,'sellpercent':cast.sellpercent})
         job.resume()
-        messages.add_message(request, messages.INFO, '任务' + task.name + '重载成功')
+        messages.add_message(request, messages.INFO, '任务' + cast.name + '重载成功')
     else:
-        scheduler.add_job(timetoorder, "cron", id=str(tid), day=task.day,hour=task.hour, minute=task.minute, second=0, kwargs={'exid': task.exid,'tid':tid,'symbol':task.symbol,'amount':task.amount,'sellpercent':task.sellpercent})
-        messages.add_message(request, messages.INFO, '任务' + task.name + '启动成功')
+        scheduler.add_job(timetoorder, "cron", id=str(cid), day=cast.day,hour=cast.hour, minute=cast.minute, second=0, kwargs={'exid': cast.exid,'cid':cid,'symbol':cast.symbol,'amount':cast.amount,'sellpercent':cast.sellpercent})
+        messages.add_message(request, messages.INFO, '任务' + cast.name + '启动成功')
     register_events(scheduler)
 
-    return redirect(reverse('task', args=[]))
-def taskpause(request,tid):
-    task = Task.objects.get(pk=tid)
-    job = scheduler.get_job(job_id=str(tid))
+    return redirect(reverse('cast', args=[]))
+def castpause(request,cid):
+    cast = Cast.objects.get(pk=cid)
+    job = scheduler.get_job(job_id=str(cid))
     if job:
         job.pause()
-        messages.add_message(request, messages.INFO, '任务' + task.name + '已暂停')
-    return redirect(reverse('task', args=[]))
-def taskdel(request,tid):
-    task = Task.objects.get(pk=tid)
-    job = scheduler.get_job(job_id=str(tid))
+        messages.add_message(request, messages.INFO, '任务' + cast.name + '已暂停')
+    return redirect(reverse('cast', args=[]))
+def castdel(request,cid):
+    cast = Cast.objects.get(pk=cid)
+    job = scheduler.get_job(job_id=str(cid))
     if job:
-        task.delete()
+        cast.delete()
         job.remove()
-    return redirect(reverse('task', args=[]))
-def task(request):
-    tasks=Task.objects.all()
-    jobs=DjangoJob.objects.all()
+    return redirect(reverse('cast', args=[]))
+def cast(request):
+    casts=Cast.objects.all()
 
-    return render(request, 'task.html', {})
+    jobs=DjangoJob.objects.all()
+    search = request.GET.get('search')
+    if search:
+        tmpcasts = []
+        for cast in casts:
+            if search in cast.name:
+                tmpcasts.append(cast)
+        casts = tmpcasts
+    else:
+        paginator = Paginator(casts, 20)
+        page = request.GET.get('page')
+        try:
+            casts = paginator.page(page)
+        except PageNotAnInteger:
+            casts = paginator.page(1)
+        except EmptyPage:
+            casts = paginator.page(paginator.num_pages)
+
+
+    return render(request, 'cast.html', {'casts':casts})
 
 # Create your views here.
 
