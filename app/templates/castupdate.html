@@ -38,33 +38,30 @@
 
     <div class="box box-success">
         <div class="box-header with-border">
-            <h3 class="box-title">定投信息</h3>
+            <h3 class="box-title">修改定投</h3>
         </div>
         <!-- /.box-header -->
         <div class="box-body">
-            <form role="form" method="post" action="{% url 'castaddorchange' %}">
+            <form role="form" method="post" action="{% url 'castupdate' cid %}">
                 {% csrf_token %}
                 <!-- text input -->
                 <div class="form-group">
                     <label>定投名称</label>
-                    <input type="text" class="form-control" name="{{ castform.name.name }}"
-                           value="{% if castform.name.value %}{{ castform.name.value }}{% endif %}">
+                    <input type="text" class="form-control" name="{{ castform.name.name }}" value="{{ castform.name.value }}"
+                           placeholder="请输入定投名称" >
                 </div>
                 <div class="form-group">
-                    <label>cron设置</label><br>
-                    分:<input type="text" name="{{ castform.minute.name }}"
-                             value="{% if castform.minute.value %}{{ castform.minute.value }}{% endif %}">
-                    时:<input type="text" name="{{ castform.hour.name }}"
-                             value="{% if castform.hour.value %}{{ castform.hour.value }}{% endif %}">
-                    天:<input type="text" name="{{ castform.day.name }}"
-                             value="{% if castform.day.value %}{{ castform.day.value }}{% endif %}">
+                    <label>cron设置（参考crontab)</label><br>
+                    分:<input type="text" name="{{ castform.minute.name }}" value="{{ castform.minute.value }}" placeholder="例：*  1-59 ">
+                    时:<input type="text" name="{{ castform.hour.name }}" value="{{ castform.hour.value }}" placeholder="例：*  1-23 ">
+                    天:<input type="text" name="{{ castform.day.name }}" value="{{ castform.day.value }}" placeholder="例：*  1-31 ">
                 </div>
                 <div class="form-group">
-                    <label>选择交易所</label>
+                    <label>(当前交易所：{{ ex.name }},当前交易对：{{ castform.symbol.value }})</label><br>
+                    <label>选择新的交易所</label>
                     {{ castform.exid }}
-
-                    <label>选择交易对</label>
-                    <select class="form-control" id="selectsymbol" name="{{ castform.symbol.name }}">
+                    <label>选择新的交易对</label>
+                    <select class="form-control" id="selectsymbol" name="{{ castform.symbol.name }}" >
                     </select>
                 </div>
                 <div class="form-group">
@@ -78,12 +75,19 @@
                            value="{% if castform.sellpercent.value %}{{ castform.sellpercent.value }}{% endif %}">
                 </div>
                 <div>
-                    {{ castform.errors }}
-                    {{ castform.non_field_errors }}
+                    {{ castform.errors.name }}
+                    {{ castform.errors.minute }}
+                    {{ castform.errors.hour }}
+                    {{ castform.errors.day }}
+                    {{ castform.errors.exid }}
+                    {{ castform.errors.symbol }}
+                    {{ castform.errors.amount }}
+                    {{ castform.errors.sellpercent }}
+
                 </div>
 
                 <button type="submit" class="btn btn-primary">保存</button>
-                <a class="btn" href="{% url 'exchange' %}">返回</a>
+                <a class="btn" href="{% url 'cast' %}">返回</a>
 
 
             </form>

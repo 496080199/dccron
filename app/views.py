@@ -9,6 +9,8 @@ from django.urls import reverse
 from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.core import serializers
+from django.views.decorators.csrf import csrf_exempt
+from pytz import timezone
 import json
 import ccxt
 import re
@@ -24,7 +26,9 @@ from .models import *
 from apscheduler.schedulers.background import BackgroundScheduler
 from django_apscheduler.jobstores import DjangoJobStore, register_events, register_job
 
-scheduler = BackgroundScheduler()
+tz=timezone('Asia/Shanghai')
+
+scheduler = BackgroundScheduler(timezone=tz)
 scheduler.add_jobstore(DjangoJobStore(), "default")
 
 scheduler.start()
@@ -36,6 +40,7 @@ def writecastlog(cid,content):
     castlog.save()
 
 def timetoorder(exid,cid,symbol,amount,sellpercent):
+    symbol = re.sub('_', '/', symbol)
     cast = Cast.objects.get(pk=cid)
     exchange = Exchange.objects.get(pk=exid)
     ex = eval("ccxt." + exchange.code + "()")
@@ -44,7 +49,7 @@ def timetoorder(exid,cid,symbol,amount,sellpercent):
     ex.options['createMarketBuyOrderRequiresPrice'] = False
     try:
         cost=cast.cost
-        firstsymbol=symbol.split('_')[0]
+        firstsymbol=symbol.split('/')[0]
         quatity=Decimal(ex.fetchbalance()[firstsymbol]['free'])
         orderbook = ex.fetch_order_book(symbol=symbol)
         bid = orderbook['bids'][0][0] if len(orderbook['bids']) > 0 else None
@@ -55,8 +60,8 @@ def timetoorder(exid,cid,symbol,amount,sellpercent):
             if sellorderdata['info']['status'] == 'ok':
                 content='定投收益已达到'+sellpercent+'%,成功卖出'
                 writecastlog(cid,content)
-    except:
-        content = '定投卖出异常'
+    except Exception as e:
+        content = '定投卖出异常:'+str(e)
         writecastlog(cid, content)
         pass
 
@@ -64,14 +69,44 @@ def timetoorder(exid,cid,symbol,amount,sellpercent):
         buyorderdata=ex.create_market_buy_order(symbol=symbol, amount=amount)
         if buyorderdata['info']['status'] == 'ok':
             cast.cost+=amount
-            content = '定投成功买入'+str(amount)+'金额的'+str(symbol.split('_')[1])
+            content = '定投成功买入'+str(amount)+'金额的'+str(symbol.split('/')[1])
             writecastlog(cid, content)
-    except:
-        content = '定投买入异常'
+    except Exception as e:
+        content = '定投买入异常'+str(e)
         writecastlog(cid, content)
         pass
 
-####
+################################################
+def castadd(request):
+    castform = CastForm()
+    if request.method=='POST':
+        castform = CastForm(request.POST)
+        if castform.is_valid():
+            cast=castform.save(commit=False)
+            cast.save()
+            return redirect(reverse('cast', args=[]))
+    return render(request, 'castadd.html', {'castform':castform})
+def castupdate(request,cid):
+    cast = Cast.objects.get(pk=cid)
+    ex=Exchange.objects.get(pk=cast.exid)
+    if request.method=='POST':
+        castform = CastForm(request.POST)
+        if castform.is_valid():
+            castinfo = castform.cleaned_data
+            cast.minute=castinfo['minute']
+            cast.hour = castinfo['hour']
+            cast.day = castinfo['day']
+            cast.exid = castinfo['exid']
+            cast.symbol = castinfo['symbol']
+            cast.amount = castinfo['amount']
+            cast.sellpercent = castinfo['sellpercent']
+            cast.save()
+            messages.add_message(request, messages.INFO, '任务' + cast.name + '修改成功')
+
+            return redirect(reverse('cast', args=[]))
+    castform = CastForm(instance=cast)
+    return render(request, 'castupdate.html', {'castform': castform,'cid':cid,'ex':ex})
+
 def castaddorchange(request):
     exchanges=Exchange.objects.all()
     cid = request.GET.get('cid')
@@ -81,14 +116,21 @@ def castaddorchange(request):
     else:
         castform=CastForm()
     if request.method=='POST':
-        pass
+        castform = CastForm(request.POST)
+        if castform.is_valid():
+            cast=castform.save(commit=False)
+            cast.save()
+            return redirect(reverse('cast', args=[]))
     return render(request, 'castinfo.html', {'castform':castform,'exchanges':exchanges})
 def castload(request,cid):
     cast=Cast.objects.get(pk=cid)
     job=scheduler.get_job(job_id=str(cid))
     if job:
-        scheduler.reschedule_job("cron", id=str(cid), day=cast.day,hour=cast.hour, minute=cast.minute, second=0, kwargs={'exid': cast.exid,'cid':cid,'symbol':cast.symbol,'amount':cast.amount,'sellpercent':cast.sellpercent})
-        job.resume()
+        job.remove()
+        scheduler.add_job(timetoorder, "cron", id=str(cid), day=cast.day, hour=cast.hour, minute=cast.minute, second=0,
+                          kwargs={'exid': cast.exid, 'cid': cid, 'symbol': cast.symbol, 'amount': cast.amount,
+                                  'sellpercent': cast.sellpercent})
+
         messages.add_message(request, messages.INFO, '任务' + cast.name + '重载成功')
     else:
         scheduler.add_job(timetoorder, "cron", id=str(cid), day=cast.day,hour=cast.hour, minute=cast.minute, second=0, kwargs={'exid': cast.exid,'cid':cid,'symbol':cast.symbol,'amount':cast.amount,'sellpercent':cast.sellpercent})
@@ -98,17 +140,21 @@ def castload(request,cid):
     return redirect(reverse('cast', args=[]))
 def castpause(request,cid):
     cast = Cast.objects.get(pk=cid)
-    job = scheduler.get_job(job_id=str(cid))
-    if job:
-        job.pause()
+    #job = scheduler.get_job(job_id=str(cid))
+    jobs = DjangoJob.objects.filter(name=str(cid))
+    if jobs.exists():
+        jobs[0].delete()
+        #scheduler.pause_job(str(cid))
         messages.add_message(request, messages.INFO, '任务' + cast.name + '已暂停')
     return redirect(reverse('cast', args=[]))
 def castdel(request,cid):
     cast = Cast.objects.get(pk=cid)
+    name=cast.name
     job = scheduler.get_job(job_id=str(cid))
     if job:
-        cast.delete()
         job.remove()
+    cast.delete()
+    messages.add_message(request, messages.INFO, '任务' + name + '已删除')
     return redirect(reverse('cast', args=[]))
 def cast(request):
     casts=Cast.objects.all()
@@ -267,9 +313,11 @@ def symbol(request):
 
     return render(request, 'symbol.html',{'exchanges':exchanges,'symbols':symbols})
 
-def symbolselect(request,exid):
+@csrf_exempt
+def symbolselect(request):
     ajax_symbols=None
     if request.method == 'POST':
+        exid=request.POST['exid']
         ajax_symbols=serializers.serialize('json',Symbol.objects.filter(exchange_id=exid))
 
 

@@ -12,15 +12,15 @@ class Symbol(models.Model):
     exchange=models.ForeignKey('Exchange',on_delete=models.CASCADE,null=True)
     name=models.CharField('对名称', max_length=30,default='')
 class Cast(models.Model):
-    name=models.CharField('定投名称', max_length=100,unique=True)
+    name=models.CharField('定投名称', max_length=100)
     minute=models.CharField('分', max_length=10,)
     hour = models.CharField('时', max_length=10)
     day = models.CharField('天', max_length=10)
     exid =models.IntegerField('交易所ID')
     symbol=models.CharField('交易对', max_length=20)
     amount=models.DecimalField('金额',max_digits=40, decimal_places=20)
-    sellpercent=models.DecimalField('卖出比率', max_digits=40, decimal_places=20)
-    cost=models.DecimalField('成本，max_length=50', max_digits=40, decimal_places=20)
+    sellpercent=models.DecimalField('卖出比率', max_digits=5, decimal_places=2)
+    cost=models.DecimalField('成本，max_length=50', max_digits=40, decimal_places=20,default=0)
     ttime=models.DateTimeField('任务时间',auto_now=True)
     def getrun(self):
         status='停止'

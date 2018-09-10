@@ -15,12 +15,13 @@
                     <div id="example1_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
                         <div class="row">
                             <div class=" col-sm-6">
-                                <button type="button" class="btn btn-primary btn-sm">添加定投</button>
+                                <button type="button" class="btn btn-primary btn-sm" onclick="javascript:window.location.href='{% url 'castadd' %}'">添加定投</button>
                             </div>
                             <div class=" col-sm-6">
-                            <div id="example1_filter" class="dataTables_filter pull-right"><label>搜索:<input
-                                    type="search" class="form-control input-sm" placeholder=""
-                                    aria-controls="example1"></label></div>
+
+                                <form action="#" method="get">
+                        <label><input type="search" class="input-sm" placeholder="" aria-controls="example1"name="search"><button type="submit" class="btn btn-primary">搜索</button></label>
+                    </form>
                         </div>
                     </div>
                     <div class="row">
@@ -61,10 +62,10 @@
                                         <td>{{ cast.getnextruntime }}</td>
                                         <td>{{ cast.ttime }}</td>
                                         <td>
-                                            <button type="button" class="btn btn-primary btn-sm">配置</button>
-                                            <button type="button" class="btn btn-success btn-sm">加载</button>
-                                            <button type="button" class="btn btn-warning btn-sm">暂停</button>
-                                            <button type="button" class="btn btn-danger btn-sm">删除</button>
+                                            <button type="button" class="btn btn-primary btn-sm" onclick="javascript:window.location.href='{% url 'castupdate' cast.id %}'">配置</button>
+                                            <button type="button" class="btn btn-success btn-sm" onclick="javascript:window.location.href='{% url 'castload' cast.id %}'">加载</button>
+                                            <button type="button" class="btn btn-warning btn-sm" onclick="javascript:window.location.href='{% url 'castpause' cast.id %}'">暂停</button>
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="javascript:window.location.href='{% url 'castdel' cast.id %}'">删除</button>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -76,32 +77,17 @@
                         <div class="col-sm-5">
                         </div>
                         <div class="col-sm-12">
-                            <div class="dataTables_paginate paging_simple_numbers pull-right" id="example1_paginate">
-                                <ul class="pagination">
-                                    <li class="paginate_button previous disabled" id="example1_previous"><a href="#"
-                                                                                                            aria-controls="example1"
-                                                                                                            data-dt-idx="0"
-                                                                                                            tabindex="0">Previous</a>
-                                    </li>
-                                    <li class="paginate_button active"><a href="#" aria-controls="example1"
-                                                                          data-dt-idx="1" tabindex="0">1</a></li>
-                                    <li class="paginate_button "><a href="#" aria-controls="example1"
-                                                                    data-dt-idx="2" tabindex="0">2</a></li>
-                                    <li class="paginate_button "><a href="#" aria-controls="example1"
-                                                                    data-dt-idx="3" tabindex="0">3</a></li>
-                                    <li class="paginate_button "><a href="#" aria-controls="example1"
-                                                                    data-dt-idx="4" tabindex="0">4</a></li>
-                                    <li class="paginate_button "><a href="#" aria-controls="example1"
-                                                                    data-dt-idx="5" tabindex="0">5</a></li>
-                                    <li class="paginate_button "><a href="#" aria-controls="example1"
-                                                                    data-dt-idx="6" tabindex="0">6</a></li>
-                                    <li class="paginate_button next" id="example1_next"><a href="#"
-                                                                                           aria-controls="example1"
-                                                                                           data-dt-idx="7"
-                                                                                           tabindex="0">Next</a>
-                                    </li>
-                                </ul>
-                            </div>
+                            <div class="box-footer clearfix dataTables_paginate paging_simple_numbers" >
+                    <ul class="pagination">
+                        {% for page_number in casts.paginator.page_range %}
+                            {% ifequal page_number  casts.number %}
+                                <li class="paginate_button active"><a href="#"><strong>{{ page_number }}</strong></a></li>
+                            {% else %}
+                                <li class="paginate_button "><a href="?page={{ page_number }}">{{ page_number }}</a></li>
+                            {% endifequal %}
+                        {% endfor %}
+                    </ul>
+                </div>
                         </div>
                     </div>
                 </div>

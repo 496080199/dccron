@@ -28,8 +28,16 @@ urlpatterns = [
     path('symboladd/<int:exid>/<slug:symbol>', views.symboladd, name='symboladd'),
     path('symboldel/<int:exid>/<slug:symbol>', views.symboldel, name='symboldel'),
     path('symbol/', views.symbol, name='symbol'),
-    path('symbolselect/<int:exid>', views.symbolselect, name='symbolselect'),
+    path('symbolselect/', views.symbolselect, name='symbolselect'),
     path('cast/', views.cast, name='cast'),
+    path('castadd/', views.castadd, name='castadd'),
+    path('castupdate/<int:cid>', views.castupdate, name='castupdate'),
+    path('castdel/<int:cid>', views.castdel, name='castdel'),
+    path('castload/<int:cid>', views.castload, name='castload'),
+    path('castpause/<int:cid>', views.castpause, name='castpause'),
+
+
+
     path('castaddorchange/', views.castaddorchange, name='castaddorchange'),
 
     path('symbolajax/<str:ecode>', views.symbolajax, name='symbolajax'),

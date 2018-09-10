@@ -33,6 +33,7 @@ class ExchangeForm(forms.ModelForm):
 
         return cleaned_data
 class CastForm(forms.ModelForm):
+    exid=forms.ChoiceField(choices=Exchange.objects.filter(status=1).values_list('id','name'),widget = forms.Select(attrs={'class':'select form-control', 'onChange':'javascript:symbolselect()'}))
     class Meta:
         model=Cast
         fields = ['name', 'minute', 'hour', 'day','exid','symbol','amount','sellpercent']
