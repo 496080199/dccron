@@ -1,0 +1,6 @@
+django
+ccxt
+django_apscheduler
+mysqlclient
+django-simple-captcha
+PyYAML

@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+
+{% block main %}
+    <script>
+    function symbolselect() {
+        var exid=$("#selectexchange").val();
+        $.ajax({
+            type:"POST",
+            url:"/app/symbolselect",
+            data:{
+                "exid":exid
+            },
+            dataType:"json",
+            contentType: "application/x-www-form-urlencoded; charset=utf-8",
+            success:function (data){
+                $.each(data.first, function(i, item) {
+                    $("#selectsymbol").append("<option value='"+item.fields.name+"'>"+item.fields.name+"</option>");
+                })
+
+
+            }
+        })
+
+    }
+</script>
+
+
+    <div class="box box-success">
+            <div class="box-header with-border">
+              <h3 class="box-title">定投信息</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+              <form role="form" method="post" action="#">
+              {% csrf_token %}
+                <!-- text input -->
+                <div class="form-group">
+                  <label>定投名称</label>
+                  <input type="text" class="form-control" name="{{ castform.name.name }}" value="{% if castform.name.value %}{{ castform.name.value }}{% endif %}">
+                </div>
+                <div class="form-group">
+                  <label>cron设置</label><br>
+                    分:<input type="text"  class="form-control" name="{{ casyform.minute.name }}" value="{% if castform.minute.value %}{{ castform.minute.value }}{% endif %}">
+                    时:<input type="text" class="form-control"  name="{{ casyform.hour.name }}" value="{% if castform.hour.value %}{{ castform.hour.value }}{% endif %}">
+                    天:<input type="text" class="form-control"  name="{{ casyform.day.name }}" value="{% if castform.day.value %}{{ castform.day.value }}{% endif %}">
+                </div>
+              <div class="form-group">
+                  <label>选择交易所</label>
+                  <select class="form-control" id="selectexchange" onchange="javascript:symbolselect()">
+                      <option>----</option>
+                      {% for exchange in exchanges %}
+                          <option value="{{ exchange.id }}" {% if castform.exid == exchange.id %}selected{% endif %}>{{ exchange.name }}</option>
+                      {% endfor %}
+                  </select>
+
+                  <label>选择交易对</label>
+                  <select class="form-control" id="selectsymbol">
+                      <option>----</option>
+                  </select>
+                </div>
+              <div class="form-group">
+                  <label>数量</label>
+                 <input class="form-control" type="number"  step="1e-20" name="{{ casyform.amount.name }}" value="{% if castform.amount.value %}{{ castform.amount.value }}{% endif %}">
+                </div>
+              <div class="form-group">
+                  <label>增长百分比(%)</label>
+                 <input class="form-control" type="number"  step="1e-20" name="{{ casyform.sellpercent.name }}" value="{% if castform.sellpercent.value %}{{ castform.sellpercent.value }}{% endif %}">
+                </div>
+
+                 <button type="submit" class="btn btn-primary">保存</button>
+                 <a class="btn" href="{% url 'exchange' %}">返回</a>
+
+
+              </form>
+            </div>
+            <!-- /.box-body -->
+          </div>
+
+{% endblock %}

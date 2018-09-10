@@ -32,6 +32,9 @@ class ExchangeForm(forms.ModelForm):
                 raise forms.ValidationError('API_KEY或SECRET_KEY未设置，无法启用此交易所')
 
         return cleaned_data
-
+class CastForm(forms.ModelForm):
+    class Meta:
+        model=Cast
+        fields = ['name', 'minute', 'hour', 'day','exid','symbol','amount','sellpercent']
 
 
