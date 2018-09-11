@@ -16,6 +16,12 @@ class LoginForm(forms.Form):
         if len(user) == 0:
             raise forms.ValidationError('用户%s不存在' % value)
         return value
+
+class PasswdForm(forms.Form):
+    oldpass=forms.CharField(label='旧密码')
+    newpass=forms.CharField(label='新密码')
+    rnewpass=forms.CharField(label='重复新密码')
+
 class ExchangeForm(forms.ModelForm):
     apikey=forms.CharField(required=False)
     secretkey = forms.CharField(required=False)

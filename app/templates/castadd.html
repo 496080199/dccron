@@ -1,39 +1,8 @@
 {% extends 'base.html' %}
-
+{% load static %}
 
 {% block main %}
-    <script>
-        function symbolselect() {
-            var exid = $("#id_exid").val();
-            console.log(exid)
-            if (exid.length == '') {
-                $("#selectsymbol").empty();
-            }
-            else {
-                $.ajax({
-                    type: "POST",
-                    url: "{% url 'symbolselect' %}",
-                    data: {
-                        "exid": exid
-                    },
-                    dataType: "json",
-                    contentType: "application/x-www-form-urlencoded; charset=utf-8",
-                    success: function (data) {
-                        $("#selectsymbol").empty();
-                        $.each(data, function (i, item) {
 
-                            $("#selectsymbol").append("<option value='" + item["fields"]["name"] + "'>" + item["fields"]["name"] + "</option>");
-                        })
-
-
-                    }
-                })
-
-            }
-
-
-        }
-    </script>
 
 
     <div class="box box-success">
@@ -42,47 +11,46 @@
         </div>
         <!-- /.box-header -->
         <div class="box-body">
-            <form role="form" method="post" action="{% url 'castaddorchange' %}">
+            <form role="form" method="post" action="{% url 'castadd' %}">
                 {% csrf_token %}
                 <!-- text input -->
                 <div class="form-group">
                     <label>定投名称</label>
                     <input type="text" class="form-control" name="{{ castform.name.name }}"
                            placeholder="请输入定投名称">
+                    {{ castform.errors.name }}
                 </div>
                 <div class="form-group">
                     <label>cron设置（参考crontab)</label><br>
-                    分:<input type="text" name="{{ castform.minute.name }}" placeholder="例：*  1-59 ">
-                    时:<input type="text" name="{{ castform.hour.name }}" placeholder="例：*  1-23 ">
-                    天:<input type="text" name="{{ castform.day.name }}" placeholder="例：*  1-31 ">
+                    分:<input type="text" name="{{ castform.minute.name }}" placeholder="例：*  1-59 ">{{ castform.errors.minute }}
+                    时:<input type="text" name="{{ castform.hour.name }}" placeholder="例：*  1-23 ">{{ castform.errors.hour }}
+                    天:<input type="text" name="{{ castform.day.name }}" placeholder="例：*  1-31 ">{{ castform.errors.day }}
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="exans">
                     <label>选择交易所</label>
-                    {{ castform.exid }}
-
+                    <select class="exchange form-control" name="{{ castform.exid.name }}"></select>
+                    {{ castform.errors.exid }}
                     <label>选择交易对</label>
-                    <select class="form-control" id="selectsymbol" name="{{ castform.symbol.name }}">
-                    </select>
+                    <select class="symbol form-control" name="{{ castform.symbol.name }}"></select>
+                    {{ castform.errors.symbol }}
                 </div>
                 <div class="form-group">
                     <label>数量</label>
                     <input class="form-control" type="number" step="1e-20" name="{{ castform.amount.name }}"
                            value="{% if castform.amount.value %}{{ castform.amount.value }}{% endif %}">
+                    {{ castform.errors.amount }}
                 </div>
                 <div class="form-group">
                     <label>增长百分比(%)</label>
                     <input class="form-control" type="number" step="1e-20" name="{{ castform.sellpercent.name }}"
                            value="{% if castform.sellpercent.value %}{{ castform.sellpercent.value }}{% endif %}">
+                {{ castform.errors.sellpercent }}
                 </div>
                 <div>
-                    {{ castform.errors.name }}
-                    {{ castform.errors.minute }}
-                    {{ castform.errors.hour }}
-                    {{ castform.errors.day }}
-                    {{ castform.errors.exid }}
-                    {{ castform.errors.symbol }}
-                    {{ castform.errors.amount }}
-                    {{ castform.errors.sellpercent }}
+
+
+
+
 
                 </div>
 
@@ -94,5 +62,19 @@
         </div>
         <!-- /.box-body -->
     </div>
+
+
+        <script src="http://cdn.staticfile.org/jquery/1.11.3/jquery.min.js"></script>
+        <script src="{% static 'dist/js/jquery.cxselect.js' %}"></script>
+        <script>
+            $('#exans').cxSelect({
+                url: '{% url 'symbolselect' %}',
+                selects: ['exchange', 'symbol'],
+                jsonName: 'name',
+                jsonValue: 'value',
+                jsonSub: 'sub',
+            });
+
+        </script>
 
 {% endblock %}

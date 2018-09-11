@@ -20,6 +20,8 @@ from . import views
 urlpatterns = [
     path('base/', views.base, name='base'),
     path('login/', views.login, name='login'),
+    path('logout/', views.logout, name='logout'),
+    path('passwd/', views.passwd, name='passwd'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('exchange/', views.exchange, name='exchange'),
     path('exchangeinfo/<int:exid>', views.exchangeinfo, name='exchangeinfo'),
@@ -35,11 +37,8 @@ urlpatterns = [
     path('castdel/<int:cid>', views.castdel, name='castdel'),
     path('castload/<int:cid>', views.castload, name='castload'),
     path('castpause/<int:cid>', views.castpause, name='castpause'),
+    path('castlog/<int:cid>', views.castlog, name='castlog'),
 
 
-
-    path('castaddorchange/', views.castaddorchange, name='castaddorchange'),
-
-    path('symbolajax/<str:ecode>', views.symbolajax, name='symbolajax'),
 
 ]

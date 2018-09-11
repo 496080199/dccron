@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+
+{% block main %}
+
+
+        <div class="row">
+        <div class="col-xs-12">
+          <div class="box">
+            <div class="box-header">
+              <h3 class="box-title">{{ cast.name }}定投日志</h3>
+
+              <div class="box-tools">
+                <div class="pull-right">
+                    <form action="#" method="get">
+                        <label><input type="search" class="input-sm" placeholder="" aria-controls="example1"name="search"><button type="submit" class="btn btn-primary">搜索</button></label>
+                    </form>
+                </div>
+                </div>
+              </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body table-responsive no-padding">
+              <table class="table table-hover">
+                <tr>
+                  <th style="width: 80px;">时间</th>
+                  <th>日志内容</th>
+                </tr>
+                {% for castlog in castlogs %}
+                 <tr>
+                  <td>{{ castlog.tltime }}</td>
+                  <td>{{ castlog.content }}</td>
+                </tr>
+                {% endfor %}
+
+              </table>
+            </div>
+            <!-- /.box-body -->
+          <div class="box-footer clearfix dataTables_paginate paging_simple_numbers" >
+                    <ul class="pagination">
+                        {% for page_number in castlogs.paginator.page_range %}
+                            {% ifequal page_number  castlogs.number %}
+                                <li class="paginate_button active"><a href="#"><strong>{{ page_number }}</strong></a></li>
+                            {% else %}
+                                <li class="paginate_button "><a href="?page={{ page_number }}">{{ page_number }}</a></li>
+                            {% endifequal %}
+                        {% endfor %}
+                    </ul>
+                </div>
+           <a class="btn" href="{% url 'cast' %}">返回</a>
+          </div>
+
+          <!-- /.box -->
+        </div>
+
+      </div>
+
+{% endblock %}

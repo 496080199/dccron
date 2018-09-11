@@ -36,5 +36,5 @@ class Cast(models.Model):
         return nextruntime
 class Castlog(models.Model):
     cast=models.ForeignKey('Cast',on_delete=models.CASCADE)
-    tltime=models.TimeField('日志时间',auto_now_add=True)
+    tltime=models.DateTimeField('日志时间',auto_now_add=True)
     content=models.TextField('日志内容',max_length=2000)

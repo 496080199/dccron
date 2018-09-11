@@ -44,6 +44,10 @@
                                         style="width: 50px;">下次运行时间
                                     </th>
                                     <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                        colspan="1" aria-label="Platform(s): activate to sort column ascending"
+                                        style="width: 50px;">运行日志
+                                    </th>
+                                    <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
                                         colspan="1" aria-label="Engine version: activate to sort column ascending"
                                         style="width: 50px;">创建时间
                                     </th>
@@ -60,6 +64,7 @@
                                         <td>{{ cast.name }}</td>
                                         <td>{{ cast.getrun }}</td>
                                         <td>{{ cast.getnextruntime }}</td>
+                                        <td><a href="{% url 'castlog' cast.id %}">查看</a></td>
                                         <td>{{ cast.ttime }}</td>
                                         <td>
                                             <button type="button" class="btn btn-primary btn-sm" onclick="javascript:window.location.href='{% url 'castupdate' cast.id %}'">配置</button>

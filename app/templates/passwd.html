@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+
+{% block main %}
+
+
+    <div class="box box-warning">
+            <div class="box-header with-border">
+              <h3 class="box-title">修改密码</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+              <form role="form" method="post" action="#">
+              {% csrf_token %}
+                <!-- text input -->
+                <div class="form-group">
+                  <label>旧密码</label>
+                  <input type="password" class="form-control" name="{{ passwdform.oldpass.name }}" placeholder="请输入旧密码" >
+                </div>
+                <div class="form-group">
+                  <label>新密码</label>
+                  <input type="password" class="form-control" name="{{ passwdform.newpass.name }}" placeholder="请输入新密码" >
+                </div>
+                <div class="form-group">
+                  <label>重复新密码</label>
+                  <input type="password" class="form-control" name="{{ passwdform.rnewpass.name }}" placeholder="请重新输入新密码" >
+                </div>
+
+
+
+                 <button type="submit" class="btn btn-primary">保存</button>
+                 <a class="btn" href="{% url 'exchange' %}">返回</a>
+
+
+              </form>
+            </div>
+            <!-- /.box-body -->
+          </div>
+
+{% endblock %}
+<script>
+    var check=$("#check").prop("checked")
+    if (check) {
+        $("#check").attr("value","True")
+    }
+</script>
