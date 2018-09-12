@@ -8,7 +8,7 @@
         <div class="col-xs-12">
           <div class="box">
             <div class="box-header">
-              <h3 class="box-title">{{ cast.name }}定投日志</h3>
+              <h3 class="box-title">{{ condition.name }}条件投日志</h3>
 
               <div class="box-tools">
                 <div class="pull-right">
@@ -26,10 +26,10 @@
                   <th style="width: 150px;">时间</th>
                   <th>日志内容</th>
                 </tr>
-                {% for castlog in castlogs %}
+                {% for conditionlog in conditionlogs %}
                  <tr>
-                  <td>{{ castlog.tltime }}</td>
-                  <td>{{ castlog.content }}</td>
+                  <td>{{ conditionlog.tltime }}</td>
+                  <td>{{ conditionlog.content }}</td>
                 </tr>
                 {% endfor %}
 
@@ -38,8 +38,8 @@
             <!-- /.box-body -->
           <div class="box-footer clearfix dataTables_paginate paging_simple_numbers" >
                     <ul class="pagination">
-                        {% for page_number in castlogs.paginator.page_range %}
-                            {% ifequal page_number  castlogs.number %}
+                        {% for page_number in conditionlogs.paginator.page_range %}
+                            {% ifequal page_number  conditionlogs.number %}
                                 <li class="paginate_button active"><a href="#"><strong>{{ page_number }}</strong></a></li>
                             {% else %}
                                 <li class="paginate_button "><a href="?page={{ page_number }}">{{ page_number }}</a></li>
@@ -47,7 +47,7 @@
                         {% endfor %}
                     </ul>
                 </div>
-           <a class="btn" href="{% url 'cast' %}">返回</a>
+           <a class="btn" href="{% url 'condition' %}">返回</a>
           </div>
 
           <!-- /.box -->

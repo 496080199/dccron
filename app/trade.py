@@ -1,5 +1,5 @@
 from .models import *
-import re
+import ccxt,re
 from decimal import Decimal
 
 def writecastlog(cid,content):
@@ -7,10 +7,8 @@ def writecastlog(cid,content):
     castlog.content = content
     castlog.save()
 
-def timetoorder(exid,cid,symbol,amount,sellpercent):
-    symbol = re.sub('_', '/', symbol)
-    cast = Cast.objects.get(pk=cid)
-    exchange = Exchange.objects.get(pk=exid)
+def casttoorder(cast,exchange):
+    symbol = re.sub('_', '/', cast.symbol)
     ex = eval("ccxt." + exchange.code + "()")
     ex.apiKey = exchange.apikey
     ex.secret = exchange.secretkey
@@ -23,23 +21,69 @@ def timetoorder(exid,cid,symbol,amount,sellpercent):
         bid = orderbook['bids'][0][0] if len(orderbook['bids']) > 0 else None
         ask = orderbook['asks'][0][0] if len(orderbook['asks']) > 0 else None
         averageprice = Decimal((ask + bid) / 2)
-        if averageprice*quatity > cost * (1+(sellpercent/100)):
-            sellorderdata=exchange.create_market_sell_order(symbol=symbol, amount=quatity)
+        if averageprice*quatity > cost * (1+(cast.sellpercent/100)):
+            sellorderdata=ex.create_market_sell_order(symbol=symbol, amount=quatity)
             if sellorderdata['info']['status'] == 'ok':
-                content='定投收益已达到'+sellpercent+'%,成功卖出'
-                writecastlog(cid,content)
+                content='定投收益已达到'+cast.sellpercent+'%,成功卖出'
+                writecastlog(cast.id,content)
     except Exception as e:
         content = '定投卖出异常:'+str(e)
-        writecastlog(cid, content)
+        writecastlog(cast.id, content)
         pass
 
     try:
+        amount=cast.amount
         buyorderdata=ex.create_market_buy_order(symbol=symbol, amount=amount)
         if buyorderdata['info']['status'] == 'ok':
             cast.cost+=amount
             content = '定投成功买入'+str(amount)+'金额的'+str(symbol.split('/')[1])
-            writecastlog(cid, content)
+            writecastlog(cast.id, content)
     except Exception as e:
         content = '定投买入异常'+str(e)
-        writecastlog(cid, content)
+        writecastlog(cast.id, content)
+        pass
+
+
+def writeconditionlog(cid,content):
+    conditionlog = Conditionlog.objects.create(condition_id=cid)
+    conditionlog.content = content
+    conditionlog.save()
+
+def scconditionstop(cid):
+    jobid = 'condition' + str(cid)
+    jobs = DjangoJob.objects.filter(name=jobid)
+    if jobs.exists():
+        jobs[0].delete()
+
+def conditiontoorder(condition,exchange):
+    symbol = re.sub('_', '/', condition.symbol)
+    price=condition.price
+    number=condition.number
+    ex = eval("ccxt." + exchange.code + "()")
+    ex.apiKey = exchange.apikey
+    ex.secret = exchange.secretkey
+    try:
+        orderbook = ex.fetch_order_book(symbol=symbol)
+        bid = orderbook['bids'][0][0] if len(orderbook['bids']) > 0 else None
+        ask = orderbook['asks'][0][0] if len(orderbook['asks']) > 0 else None
+        averageprice = Decimal((ask + bid) / 2)
+        if condition.direction =='sell':
+            if averageprice > price:
+                sellorderdata = ex.create_market_sell_order(symbol=symbol, amount=number)
+                if sellorderdata['info']['status'] == 'ok':
+                    content = '已达到价格为' + price + '条件,成功卖出'
+                    writeconditionlog(condition.id, content)
+                    scconditionstop(condition.id)
+
+        elif condition.direction == 'buy':
+            if averageprice < price:
+                buyorderdata = ex.create_market_buy_order(symbol=symbol, amount=number,price=averageprice)
+                if buyorderdata['info']['status'] == 'ok':
+                    content = '已按价格为' + averageprice + '条件,成功买入'
+                    writeconditionlog(condition.id, content)
+                    scconditionstop(condition.id)
+
+    except Exception as e:
+        content = '交易异常' + str(e)
+        writeconditionlog(condition.id, content)
         pass

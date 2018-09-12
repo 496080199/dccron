@@ -8,14 +8,14 @@
         <div class="col-xs-12">
             <div class="box">
                 <div class="box-header">
-                    <h3 class="box-title">定投列表</h3>
+                    <h3 class="box-title">条件投列表</h3>
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body">
                     <div id="example1_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
                         <div class="row">
                             <div class=" col-sm-6">
-                                <button type="button" class="btn btn-primary btn-sm" onclick="javascript:window.location.href='{% url 'castadd' %}'">添加定投</button>
+                                <button type="button" class="btn btn-primary btn-sm" onclick="javascript:window.location.href='{% url 'conditionadd' %}'">添加条件投</button>
                             </div>
                             <div class=" col-sm-6">
 
@@ -41,10 +41,6 @@
                                     </th>
                                     <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
                                         colspan="1" aria-label="Platform(s): activate to sort column ascending"
-                                        style="width: 100px;">下次运行时间
-                                    </th>
-                                    <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
-                                        colspan="1" aria-label="Platform(s): activate to sort column ascending"
                                         style="width: 50px;">运行日志
                                     </th>
                                     <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
@@ -58,19 +54,18 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {% for cast in casts %}
+                                {% for condition in conditions %}
                                     <tr role="row" class="odd">
 
-                                        <td>{{ cast.name }}</td>
+                                        <td>{{ condition.name }}</td>
                                         <td>{% if cast.getrun == 1 %}<span class="label label-success">运行</span>{% else %}<span class="label label-warning">停止</span>{% endif %}</td>
-                                        <td>{{ cast.getnextruntime }}</td>
-                                        <td><a href="{% url 'castlog' cast.id %}">查看</a></td>
-                                        <td>{{ cast.ttime }}</td>
+                                        <td><a href="{% url 'conditionlog' condition.id %}">查看</a></td>
+                                        <td>{{ condition.ttime }}</td>
                                         <td>
-                                            <button type="button" class="btn btn-primary btn-sm" onclick="javascript:window.location.href='{% url 'castupdate' cast.id %}'">配置</button>
-                                            <button type="button" class="btn btn-success btn-sm" onclick="javascript:window.location.href='{% url 'castload' cast.id %}'">加载</button>
-                                            <button type="button" class="btn btn-warning btn-sm" onclick="javascript:window.location.href='{% url 'castpause' cast.id %}'">暂停</button>
-                                            <button type="button" class="btn btn-danger btn-sm" onclick="javascript:window.location.href='{% url 'castdel' cast.id %}'">删除</button>
+                                            <button type="button" class="btn btn-primary btn-sm" onclick="javascript:window.location.href='{% url 'conditionupdate' condition.id %}'">配置</button>
+                                            <button type="button" class="btn btn-success btn-sm" onclick="javascript:window.location.href='{% url 'conditionload' condition.id %}'">加载</button>
+                                            <button type="button" class="btn btn-warning btn-sm" onclick="javascript:window.location.href='{% url 'conditionpause' condition.id %}'">暂停</button>
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="javascript:window.location.href='{% url 'conditiondel' condition.id %}'">删除</button>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -84,8 +79,8 @@
                         <div class="col-sm-12">
                             <div class="box-footer clearfix dataTables_paginate paging_simple_numbers" >
                     <ul class="pagination">
-                        {% for page_number in casts.paginator.page_range %}
-                            {% ifequal page_number  casts.number %}
+                        {% for page_number in conditions.paginator.page_range %}
+                            {% ifequal page_number  conditions.number %}
                                 <li class="paginate_button active"><a href="#"><strong>{{ page_number }}</strong></a></li>
                             {% else %}
                                 <li class="paginate_button "><a href="?page={{ page_number }}">{{ page_number }}</a></li>

@@ -39,9 +39,19 @@ class ExchangeForm(forms.ModelForm):
 
         return cleaned_data
 class CastForm(forms.ModelForm):
-    exid=forms.ChoiceField(choices=Exchange.objects.filter(status=1).values_list('id','name'),widget = forms.Select(attrs={'class':'select form-control', 'onChange':'javascript:symbolselect()'}))
     class Meta:
         model=Cast
         fields = ['name', 'minute', 'hour', 'day','exid','symbol','amount','sellpercent']
+
+class ConditionForm(forms.ModelForm):
+    DCHOICES = (
+        ('buy', '买入'),
+        ('sell', '卖出'),
+    )
+    direction=forms.ChoiceField(choices=DCHOICES,widget=forms.Select(attrs={'class':'form-control'}))
+    class Meta:
+        model=Condition
+        fields = ['name','exid','symbol','direction','number','price']
+
 
 

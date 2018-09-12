@@ -23,14 +23,14 @@ class Cast(models.Model):
     cost=models.DecimalField('成本，max_length=50', max_digits=40, decimal_places=20,default=0)
     ttime=models.DateTimeField('任务时间',auto_now=True)
     def getrun(self):
-        status='停止'
-        jobs = DjangoJob.objects.filter(name=str(self.id))
+        status=0
+        jobs = DjangoJob.objects.filter(name='cast'+str(self.id))
         if jobs.exists():
-            status='运行'
+            status=1
         return status
     def getnextruntime(self):
         nextruntime='无'
-        jobs=DjangoJob.objects.filter(name=str(self.id))
+        jobs=DjangoJob.objects.filter(name='cast'+str(self.id))
         if jobs.exists():
             nextruntime=str(jobs[0].next_run_time)
         return nextruntime
@@ -38,3 +38,24 @@ class Castlog(models.Model):
     cast=models.ForeignKey('Cast',on_delete=models.CASCADE)
     tltime=models.DateTimeField('日志时间',auto_now_add=True)
     content=models.TextField('日志内容',max_length=2000)
+
+class Condition(models.Model):
+
+    name = models.CharField('条件投名称', max_length=100)
+    exid = models.IntegerField('交易所ID')
+    symbol = models.CharField('交易对', max_length=20)
+    direction = models.CharField('', max_length=20)
+    number = models.DecimalField('数量',max_digits=40, decimal_places=20)
+    price= models.DecimalField('价格',max_digits=40, decimal_places=20)
+    ttime = models.DateTimeField('任务时间', auto_now=True)
+    def getrun(self):
+        status=0
+        jobs = DjangoJob.objects.filter(name='condition'+str(self.id))
+        if jobs.exists():
+            status=1
+        return status
+class Conditionlog(models.Model):
+    condition= models.ForeignKey('Condition', on_delete=models.CASCADE)
+    tltime = models.DateTimeField('日志时间', auto_now_add=True)
+    content = models.TextField('日志内容', max_length=2000)
+

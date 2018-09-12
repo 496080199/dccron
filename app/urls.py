@@ -18,7 +18,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('base/', views.base, name='base'),
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
     path('passwd/', views.passwd, name='passwd'),
@@ -38,6 +37,14 @@ urlpatterns = [
     path('castload/<int:cid>', views.castload, name='castload'),
     path('castpause/<int:cid>', views.castpause, name='castpause'),
     path('castlog/<int:cid>', views.castlog, name='castlog'),
+    path('condition/', views.condition, name='condition'),
+    path('conditionadd/', views.conditionadd, name='conditionadd'),
+    path('conditionupdate/<int:cid>', views.conditionupdate, name='conditionupdate'),
+    path('conditiondel/<int:cid>', views.conditiondel, name='conditiondel'),
+    path('conditionload/<int:cid>', views.conditionload, name='conditionload'),
+    path('conditonpause/<int:cid>', views.conditionpause, name='conditionpause'),
+    path('conditonlog/<int:cid>', views.conditionlog, name='conditionlog'),
+
 
 
 

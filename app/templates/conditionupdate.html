@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block main %}
+
+
+
+    <div class="box box-success">
+        <div class="box-header with-border">
+            <h3 class="box-title">修改条件投</h3>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+            <form role="form" method="post" action="{% url 'conditionupdate' cid %}">
+                {% csrf_token %}
+                <!-- text input -->
+                <div class="form-group">
+                    <label>条件投名称</label>
+                    <input type="text" class="form-control" name="{{ conditionform.name.name }}" value="{{ conditionform.name.value }}"
+                           placeholder="请输入条件投名称" readonly>
+                    {{ conditionform.errors.name }}
+                </div>
+                <div class="form-group" id="exans">
+                    <label>选择交易所</label>
+                    <select class="exchange form-control" name="{{ conditionform.exid.name }}">
+                        <option value="{{ conditionform.exid.value }}" selected></option>
+                    </select>
+                    {{ conditionform.errors.exid }}
+                    <label>选择交易对</label>
+                    <select class="symbol form-control" name="{{ conditionform.symbol.name }}">
+                        <option value="{{ conditionform.symbol.value }}" selected></option>
+                    </select>
+                    {{ conditionform.errors.symbol }}
+                </div>
+                <div>
+                    <label>选择交易方向</label>
+                    {{ conditionform.direction }}
+                </div>
+                <div class="form-group">
+                    <label>数量</label>
+                    <input class="form-control" type="number" step="1e-20" name="{{ conditionform.number.name }}" value="{% if conditionform.number.value %}{{ conditionform.number.value }}{% endif %}">
+                    {{ conditionform.errors.amount }}
+                </div>
+                <div class="form-group">
+                    <label>预期价格</label>
+                    <input class="form-control" type="number" step="1e-20" name="{{ conditionform.price.name }}" value="{% if conditionform.price.value %}{{ conditionform.price.value }}{% endif %}">
+                {{ conditionform.errors.price }}
+                </div>
+                <div>
+
+
+
+
+
+                </div>
+
+                <button type="submit" class="btn btn-primary">保存</button>
+                <a class="btn" href="{% url 'condition' %}">返回</a>
+
+
+            </form>
+        </div>
+        <!-- /.box-body -->
+    </div>
+
+
+        <script src="http://cdn.staticfile.org/jquery/1.11.3/jquery.min.js"></script>
+        <script src="{% static 'dist/js/jquery.cxselect.js' %}"></script>
+        <script>
+            $('#exans').cxSelect({
+                url: '{% url 'symbolselect' %}',
+                selects: ['exchange', 'symbol'],
+                jsonName: 'name',
+                jsonValue: 'value',
+                jsonSub: 'sub',
+            });
+
+        </script>
+
+{% endblock %}

@@ -10,12 +10,10 @@ from django.contrib import messages
 from django.urls import reverse
 from django.shortcuts import redirect
 from django.http import HttpResponse
-from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
 from pytz import timezone
-import json
-import ccxt
-import re
+import json,platform
+
 
 
 
@@ -42,8 +40,6 @@ scheduler.start()
 
 # Create your views here.
 
-def base(request):
-    return render(request, 'base.html')
 
 def login(request):
     if request.user.is_authenticated:
@@ -95,7 +91,18 @@ def passwd(request):
 
 
 def dashboard(request):
-    return render(request, 'dashboard.html', {})
+    exchangecount=Exchange.objects.filter(status=1).count()
+    symbolcount=Symbol.objects.all().count()
+    castcount=Cast.objects.all().count()
+    conditioncount=Condition.objects.all().count()
+    system={}
+    system['plateform']=platform.platform()
+    system['machine']=platform.machine()
+    system['arch'] = platform.architecture()[0]
+    system['python']=platform.python_version()
+
+
+    return render(request, 'dashboard.html', {'exchangecount':exchangecount,'symbolcount':symbolcount,'castcount':castcount,'conditioncount':conditioncount,'system':system})
 
 def exchange(request):
     exchanges=Exchange.objects.all()
@@ -183,7 +190,7 @@ def symboldel(request,exid,symbol):
 
 def symbol(request):
     exchanges = Exchange.objects.all().values('id','name')
-    symbols=Symbol.objects.all()
+    symbols=Symbol.objects.all().order_by('name')
 
     select = request.GET.get('select')
     if select:
@@ -225,6 +232,28 @@ def symbolselect(request):
 
 
 ################################################
+def cast(request):
+    casts=Cast.objects.all().order_by('-ttime')
+    search = request.GET.get('search')
+    if search:
+        tmpcasts = []
+        for cast in casts:
+            if search in cast.name:
+                tmpcasts.append(cast)
+        casts = tmpcasts
+    else:
+        paginator = Paginator(casts, 20)
+        page = request.GET.get('page')
+        try:
+            casts = paginator.page(page)
+        except PageNotAnInteger:
+            casts = paginator.page(1)
+        except EmptyPage:
+            casts = paginator.page(paginator.num_pages)
+
+
+    return render(request, 'cast.html', {'casts':casts})
+
 def castadd(request):
     castform = CastForm()
     if request.method=='POST':
@@ -232,6 +261,7 @@ def castadd(request):
         if castform.is_valid():
             cast=castform.save(commit=False)
             cast.save()
+            messages.add_message(request, messages.INFO, '定投任务' + cast.name + '已添加')
             return redirect(reverse('cast', args=[]))
     return render(request, 'castadd.html', {'castform':castform})
 def castupdate(request,cid):
@@ -252,30 +282,31 @@ def castupdate(request,cid):
             messages.add_message(request, messages.INFO, '任务' + cast.name + '修改成功')
 
             return redirect(reverse('cast', args=[]))
-    print(castform)
 
     return render(request, 'castupdate.html', {'castform': castform,'cid':cid})
 
 
 def castload(request,cid):
     cast=Cast.objects.get(pk=cid)
-    job=scheduler.get_job(job_id=str(cid))
+    exchange = Exchange.objects.get(pk=cast.exid)
+    jobid='cast'+str(cid)
+    job=scheduler.get_job(job_id=jobid)
     if job:
         job.remove()
-        scheduler.add_job(timetoorder, "cron", id=str(cid), day=cast.day, hour=cast.hour, minute=cast.minute, second=0,
-                          kwargs={'exid': cast.exid, 'cid': cid, 'symbol': cast.symbol, 'amount': cast.amount,
-                                  'sellpercent': cast.sellpercent})
+        scheduler.add_job(casttoorder, "cron", id=jobid, day=cast.day, hour=cast.hour, minute=cast.minute, second=0,
+                          kwargs={'cast': cast, 'exchange': exchange})
 
         messages.add_message(request, messages.INFO, '任务' + cast.name + '重载成功')
     else:
-        scheduler.add_job(timetoorder, "cron", id=str(cid), day=cast.day,hour=cast.hour, minute=cast.minute, second=0, kwargs={'exid': cast.exid,'cid':cid,'symbol':cast.symbol,'amount':cast.amount,'sellpercent':cast.sellpercent})
+        scheduler.add_job(casttoorder, "cron", id=jobid, day=cast.day,hour=cast.hour, minute=cast.minute, second=0, kwargs={'cast': cast, 'exchange': exchange})
         messages.add_message(request, messages.INFO, '任务' + cast.name + '启动成功')
     register_events(scheduler)
 
     return redirect(reverse('cast', args=[]))
 def castpause(request,cid):
     cast = Cast.objects.get(pk=cid)
-    jobs = DjangoJob.objects.filter(name=str(cid))
+    jobid = 'cast' + str(cid)
+    jobs = DjangoJob.objects.filter(name=jobid)
     if jobs.exists():
         jobs[0].delete()
         messages.add_message(request, messages.INFO, '任务' + cast.name + '已暂停')
@@ -284,34 +315,15 @@ def castpause(request,cid):
     return redirect(reverse('cast', args=[]))
 def castdel(request,cid):
     cast = Cast.objects.get(pk=cid)
+    jobid = 'cast' + str(cid)
     name=cast.name
-    job = scheduler.get_job(job_id=str(cid))
+    job = scheduler.get_job(job_id=jobid)
     if job:
         job.remove()
     cast.delete()
     messages.add_message(request, messages.INFO, '任务' + name + '已删除')
     return redirect(reverse('cast', args=[]))
-def cast(request):
-    casts=Cast.objects.all()
-    search = request.GET.get('search')
-    if search:
-        tmpcasts = []
-        for cast in casts:
-            if search in cast.name:
-                tmpcasts.append(cast)
-        casts = tmpcasts
-    else:
-        paginator = Paginator(casts, 20)
-        page = request.GET.get('page')
-        try:
-            casts = paginator.page(page)
-        except PageNotAnInteger:
-            casts = paginator.page(1)
-        except EmptyPage:
-            casts = paginator.page(paginator.num_pages)
 
-
-    return render(request, 'cast.html', {'casts':casts})
 
 def castlog(request,cid):
     castlogs=Castlog.objects.filter(cast_id=cid).order_by('-tltime')
@@ -335,3 +347,121 @@ def castlog(request,cid):
 
 
     return render(request, 'castlog.html', {'castlogs': castlogs,'cast':cast})
+
+
+def condition(request):
+    conditions=Condition.objects.all().order_by('-ttime')
+    search = request.GET.get('search')
+    if search:
+        tmpconditions = []
+        for condition in conditions:
+            if search in condition.name:
+                tmpconditions.append(cast)
+                conditions = tmpconditions
+    else:
+        paginator = Paginator(conditions, 20)
+        page = request.GET.get('page')
+        try:
+            conditions = paginator.page(page)
+        except PageNotAnInteger:
+            conditions = paginator.page(1)
+        except EmptyPage:
+            conditions = paginator.page(paginator.num_pages)
+
+
+    return render(request, 'condition.html', {'conditions':conditions})
+
+def conditionadd(request):
+    conditionform = ConditionForm()
+    if request.method=='POST':
+        conditionform = ConditionForm(request.POST)
+        if conditionform.is_valid():
+            condition=conditionform.save(commit=False)
+            condition.save()
+            messages.add_message(request, messages.INFO, '条件投任务' + condition.name + '已添加')
+            return redirect(reverse('condition', args=[]))
+
+    return render(request, 'conditionadd.html', {'conditionform':conditionform})
+
+def conditionupdate(request,cid):
+    condition = Condition.objects.get(pk=cid)
+    conditionform = ConditionForm(instance=condition)
+    if request.method=='POST':
+        conditionform = ConditionForm(request.POST)
+        if conditionform.is_valid():
+            conditioninfo = conditionform.cleaned_data
+            condition.exid = conditioninfo['exid']
+            condition.symbol = conditioninfo['symbol']
+            condition.direction = conditioninfo['direction']
+            condition.number = conditioninfo['number']
+            condition.price = conditioninfo['price']
+            condition.save()
+            messages.add_message(request, messages.INFO, '任务' + condition.name + '修改成功')
+
+            return redirect(reverse('condition', args=[]))
+
+    return render(request, 'conditionupdate.html', {'conditionform': conditionform,'cid':cid})
+
+def conditionload(request,cid):
+    condition=Condition.objects.get(pk=cid)
+    exchange = Exchange.objects.get(pk=condition.exid)
+    jobid='condition'+str(cid)
+    job=scheduler.get_job(job_id=jobid)
+    if job:
+        job.remove()
+        scheduler.add_job(conditiontoorder, "cron", id=jobid, day='*', hour='*', minute='*', second=30,
+                          kwargs={'condition': condition, 'exchange': exchange})
+
+        messages.add_message(request, messages.INFO, '任务' + condition.name + '重载成功')
+    else:
+        scheduler.add_job(conditiontoorder, "cron", id=jobid, day='*', hour='*', minute='*', second=30,
+                          kwargs={'condition': condition, 'exchange': exchange})
+        messages.add_message(request, messages.INFO, '任务' + condition.name + '启动成功')
+    register_events(scheduler)
+
+    return redirect(reverse('condition', args=[]))
+
+def conditionpause(request,cid):
+    condition = Condition.objects.get(pk=cid)
+    jobid = 'condition' + str(cid)
+    jobs = DjangoJob.objects.filter(name=jobid)
+    if jobs.exists():
+        jobs[0].delete()
+        messages.add_message(request, messages.INFO, '任务' + condition.name + '已暂停')
+    else:
+        messages.add_message(request, messages.INFO, '任务' + condition.name + '处于暂停状态')
+    return redirect(reverse('condition', args=[]))
+
+def conditiondel(request,cid):
+    condition = Condition.objects.get(pk=cid)
+    jobid = 'condition' + str(cid)
+    name=condition.name
+    job = scheduler.get_job(job_id=jobid)
+    if job:
+        job.remove()
+    condition.delete()
+    messages.add_message(request, messages.INFO, '任务' + name + '已删除')
+    return redirect(reverse('condition', args=[]))
+
+def conditionlog(request,cid):
+    conditionlogs=Conditionlog.objects.filter(condition_id=cid).order_by('-tltime')
+    condition=Condition.objects.get(pk=cid)
+    search = request.GET.get('search')
+    paginator = Paginator(conditionlogs, 20)
+    page = request.GET.get('page')
+    if search:
+        tmpconditionlogs=[]
+        for conditionlog in conditionlogs:
+            if search in conditionlog.content or search in str(conditionlog.tltime):
+                tmpconditionlogs.append(conditionlog)
+                conditionlogs = tmpconditionlogs
+    else:
+        try:
+            conditionlogs = paginator.page(page)
+        except PageNotAnInteger:
+            conditionlogs = paginator.page(1)
+        except EmptyPage:
+            conditionlogs = paginator.page(paginator.num_pages)
+
+
+    return render(request, 'conditionlog.html', {'conditionlogs': conditionlogs,'condition':condition})

@@ -1,6 +1,114 @@
 {% extends 'base.html' %}
 
 {% block main %}
+        <div class="row">
+            <div class="content-header"><h3>控制台</h3></div><br>
+        </div>
+        <div class="row">
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <div class="small-box bg-aqua">
+            <div class="inner">
+              <h3>{{ exchangecount }}</h3>
+
+              <p>交易所</p>
+            </div>
+            <div class="icon">
+              <i class="fa ion-android-home"></i>
+            </div>
+            <a href="{% url 'exchange' %}" class="small-box-footer">
+              更多 <i class="fa fa-arrow-circle-right"></i>
+            </a>
+          </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <div class="small-box bg-green">
+            <div class="inner">
+              <h3>{{ symbolcount }}</h3>
+
+              <p>交易对</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-android-apps"></i>
+            </div>
+            <a href="{% url 'symbol' %}" class="small-box-footer">
+              更多 <i class="fa fa-arrow-circle-right"></i>
+            </a>
+          </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <div class="small-box bg-yellow">
+            <div class="inner">
+              <h3>{{ castcount }}</h3>
+
+              <p>定投</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-android-bookmark"></i>
+            </div>
+            <a href="{% url 'cast' %}" class="small-box-footer">
+              更多 <i class="fa fa-arrow-circle-right"></i>
+            </a>
+          </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <div class="small-box bg-red">
+            <div class="inner">
+              <h3>{{ conditioncount }}</h3>
+
+              <p>条件投</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-android-drafts"></i>
+            </div>
+            <a href="{% url 'condition' %}" class="small-box-footer">
+              更多 <i class="fa fa-arrow-circle-right"></i>
+            </a>
+          </div>
+        </div>
+        <!-- ./col -->
+      </div>
+      <div class="row">
+            <div class="col-xs-6">
+          <p class="lead">系统信息</p>
+
+          <div class="table-responsive">
+            <table class="table">
+              <tbody><tr>
+                <th style="width:50%">系统版本：</th>
+                <td>{{ system.plateform }}</td>
+              </tr>
+              <tr>
+                <th>系统架构：</th>
+                <td>{{ system.machine }}</td>
+              </tr>
+              <tr>
+                <th>系统位数：</th>
+                <td>{{ system.arch }}</td>
+              </tr>
+              <tr>
+                <th>Python版本：</th>
+                <td>{{ system.python }}</td>
+              </tr>
+            </tbody></table>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+            <div class="col-xs-12">
+          <p class="lead">DCCRONT说明</p>
+
+          <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
+            文字
+          </p>
+        </div>
+      </div>
 
 
 {% endblock %}
