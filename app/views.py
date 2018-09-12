@@ -4,7 +4,7 @@ from django.contrib import auth
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
 from django.core.paginator import PageNotAnInteger
-from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import check_password
 from django.contrib import messages
 from django.urls import reverse
@@ -61,10 +61,12 @@ def login(request):
             return render(request, 'login.html', {'loginform': loginform})
     loginform=LoginForm()
     return render(request, 'login.html',{'loginform':loginform})
+@login_required
 def logout(request):
     auth.logout(request)
     return redirect(reverse('login', args=[]))
 
+@login_required
 def passwd(request):
     if request.method == 'POST':
         passwdform=PasswdForm(request.POST)
@@ -89,7 +91,7 @@ def passwd(request):
 
     return render(request, 'passwd.html', {'passwdform':passwdform})
 
-
+@login_required
 def dashboard(request):
     exchangecount=Exchange.objects.filter(status=1).count()
     symbolcount=Symbol.objects.all().count()
@@ -104,11 +106,13 @@ def dashboard(request):
 
     return render(request, 'dashboard.html', {'exchangecount':exchangecount,'symbolcount':symbolcount,'castcount':castcount,'conditioncount':conditioncount,'system':system})
 
+@login_required
 def exchange(request):
     exchanges=Exchange.objects.all()
 
     return render(request, 'exchange.html', {'exchagnes':exchanges})
 
+@login_required
 def exchangeinfo(request,exid):
     exchange = Exchange.objects.get(pk=exid)
     exchangeform = ExchangeForm(instance=exchange)
@@ -125,6 +129,7 @@ def exchangeinfo(request,exid):
 
     return render(request, 'exchangeinfo.html', {'exchangeform':exchangeform,'exid':exid})
 
+@login_required
 def symbollist(request,exid):
     exchange = Exchange.objects.get(pk=exid)
     usymbols = exchange.symbols
@@ -155,7 +160,7 @@ def symbollist(request,exid):
 
     return render(request, 'symbollist.html', {'exchange':exchange,'symbols': symbols,'search':search})
 
-
+@login_required
 def symbolupdate(request,exid):
     exchange = Exchange.objects.get(pk=exid)
     ex=eval("ccxt."+exchange.code+"()")
@@ -165,6 +170,7 @@ def symbolupdate(request,exid):
     exchange.save()
     return redirect(reverse('symbollist',args=[exid,]))
 
+@login_required
 def symboladd(request,exid,symbol):
     exchange = Exchange.objects.get(pk=exid)
     esymbol=Symbol.objects.filter(name=symbol,exchange_id=exid)
@@ -179,6 +185,7 @@ def symboladd(request,exid,symbol):
 
     return redirect(reverse('symbollist', args=[exid, ]))
 
+@login_required
 def symboldel(request,exid,symbol):
     exchange = Exchange.objects.get(pk=exid)
     symbol = Symbol.objects.get_or_create(name=symbol, exchange_id=exid)[0]
@@ -187,7 +194,7 @@ def symboldel(request,exid,symbol):
     return redirect(reverse('symbol', args=[ ]))
 
 
-
+@login_required
 def symbol(request):
     exchanges = Exchange.objects.all().values('id','name')
     symbols=Symbol.objects.all().order_by('name')
@@ -211,6 +218,7 @@ def symbol(request):
     return render(request, 'symbol.html',{'exchanges':exchanges,'symbols':symbols})
 
 @csrf_exempt
+@login_required
 def symbolselect(request):
     selectlist=[]
     exchanges=Exchange.objects.filter(status=1)
@@ -232,6 +240,7 @@ def symbolselect(request):
 
 
 ################################################
+@login_required
 def cast(request):
     casts=Cast.objects.all().order_by('-ttime')
     search = request.GET.get('search')
@@ -254,6 +263,7 @@ def cast(request):
 
     return render(request, 'cast.html', {'casts':casts})
 
+@login_required
 def castadd(request):
     castform = CastForm()
     if request.method=='POST':
@@ -264,6 +274,7 @@ def castadd(request):
             messages.add_message(request, messages.INFO, '定投任务' + cast.name + '已添加')
             return redirect(reverse('cast', args=[]))
     return render(request, 'castadd.html', {'castform':castform})
+@login_required
 def castupdate(request,cid):
     cast = Cast.objects.get(pk=cid)
     castform = CastForm(instance=cast)
@@ -285,7 +296,7 @@ def castupdate(request,cid):
 
     return render(request, 'castupdate.html', {'castform': castform,'cid':cid})
 
-
+@login_required
 def castload(request,cid):
     cast=Cast.objects.get(pk=cid)
     exchange = Exchange.objects.get(pk=cast.exid)
@@ -303,6 +314,7 @@ def castload(request,cid):
     register_events(scheduler)
 
     return redirect(reverse('cast', args=[]))
+@login_required
 def castpause(request,cid):
     cast = Cast.objects.get(pk=cid)
     jobid = 'cast' + str(cid)
@@ -313,6 +325,7 @@ def castpause(request,cid):
     else:
         messages.add_message(request, messages.INFO, '任务' + cast.name + '处于暂停状态')
     return redirect(reverse('cast', args=[]))
+@login_required
 def castdel(request,cid):
     cast = Cast.objects.get(pk=cid)
     jobid = 'cast' + str(cid)
@@ -324,7 +337,7 @@ def castdel(request,cid):
     messages.add_message(request, messages.INFO, '任务' + name + '已删除')
     return redirect(reverse('cast', args=[]))
 
-
+@login_required
 def castlog(request,cid):
     castlogs=Castlog.objects.filter(cast_id=cid).order_by('-tltime')
     cast=Cast.objects.get(pk=cid)
@@ -348,7 +361,7 @@ def castlog(request,cid):
 
     return render(request, 'castlog.html', {'castlogs': castlogs,'cast':cast})
 
-
+@login_required
 def condition(request):
     conditions=Condition.objects.all().order_by('-ttime')
     search = request.GET.get('search')
@@ -371,6 +384,7 @@ def condition(request):
 
     return render(request, 'condition.html', {'conditions':conditions})
 
+@login_required
 def conditionadd(request):
     conditionform = ConditionForm()
     if request.method=='POST':
@@ -382,7 +396,7 @@ def conditionadd(request):
             return redirect(reverse('condition', args=[]))
 
     return render(request, 'conditionadd.html', {'conditionform':conditionform})
-
+@login_required
 def conditionupdate(request,cid):
     condition = Condition.objects.get(pk=cid)
     conditionform = ConditionForm(instance=condition)
@@ -401,7 +415,7 @@ def conditionupdate(request,cid):
             return redirect(reverse('condition', args=[]))
 
     return render(request, 'conditionupdate.html', {'conditionform': conditionform,'cid':cid})
-
+@login_required
 def conditionload(request,cid):
     condition=Condition.objects.get(pk=cid)
     exchange = Exchange.objects.get(pk=condition.exid)
@@ -420,7 +434,7 @@ def conditionload(request,cid):
     register_events(scheduler)
 
     return redirect(reverse('condition', args=[]))
-
+@login_required
 def conditionpause(request,cid):
     condition = Condition.objects.get(pk=cid)
     jobid = 'condition' + str(cid)
@@ -431,7 +445,7 @@ def conditionpause(request,cid):
     else:
         messages.add_message(request, messages.INFO, '任务' + condition.name + '处于暂停状态')
     return redirect(reverse('condition', args=[]))
-
+@login_required
 def conditiondel(request,cid):
     condition = Condition.objects.get(pk=cid)
     jobid = 'condition' + str(cid)
@@ -442,7 +456,7 @@ def conditiondel(request,cid):
     condition.delete()
     messages.add_message(request, messages.INFO, '任务' + name + '已删除')
     return redirect(reverse('condition', args=[]))
-
+@login_required
 def conditionlog(request,cid):
     conditionlogs=Conditionlog.objects.filter(condition_id=cid).order_by('-tltime')
     condition=Condition.objects.get(pk=cid)

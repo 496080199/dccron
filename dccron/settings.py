@@ -27,7 +27,7 @@ SECRET_KEY = '@i+3939a6j8i&r!ja1#0sk+^(1%htni!fi7xojow)=-hh7_7=y'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -134,5 +134,10 @@ STATICFILES_DIRS = (
 )
 
 FIXTURE_DIRS = (os.path.join(BASE_DIR, 'fixtures', ),)
+
+#login_required URL
+LOGIN_URL = '/app/login/'
+LOGIN_REDIRECT_URL = '/app/dashboard/'
+
 
 
