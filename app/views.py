@@ -81,7 +81,7 @@ def passwd(request):
                 if newpass == rnewpass:
                     user.set_password(newpass)
                     user.save()
-                    messages.add_message(request, messages.INFO, '密码修改成功')
+                    messages.add_message(request, messages.INFO, '密码修改成功,请重新登录')
                     return redirect(reverse('dashboard', args=[]))
                 else:
                     messages.add_message(request, messages.INFO, '密码不一致')
@@ -109,7 +109,7 @@ def dashboard(request):
 
 @login_required
 def exchange(request):
-    exchanges=Exchange.objects.all().order_by('code')
+    exchanges=Exchange.objects.all().order_by('-status')
     search = request.GET.get('search')
     if search:
         exchanges=Exchange.objects.filter(Q(code__contains=search)|Q(name__contains=search))
@@ -137,7 +137,8 @@ def exchangeinfo(request,exid):
             exchange.secretkey=exchangeinfo['secretkey']
             exchange.status=exchangeinfo['status']
             exchange.save()
-            messages.add_message(request,messages.INFO,'修改成功')
+            messages.add_message(request,messages.INFO,exchange.name+'交易所修改成功')
+            return redirect(reverse('exchange', args=[]))
 
 
     return render(request, 'exchangeinfo.html', {'exchangeform':exchangeform,'exid':exid})
@@ -177,6 +178,8 @@ def symbollist(request,exid):
 def symbolupdate(request,exid):
     exchange = Exchange.objects.get(pk=exid)
     ex=eval("ccxt."+exchange.code+"()")
+    ex.apiKey = exchange.apikey
+    ex.secret = exchange.secretkey
     ex.load_markets()
     symbols=' '.join(ex.symbols)
     exchange.symbols=symbols

@@ -34,7 +34,7 @@
                 </tr>
                 {% for exchange in exchagnes %}
                  <tr>
-                  <td>{{ exchange.id }}</td>
+                  <td>{{ forloop.counter }}</td>
                   <td>{{ exchange.code }}</td>
                   <td>{{ exchange.name }}</td>
                   <td><a href="{% url 'symbollist' exchange.id %}">查看</a></td>

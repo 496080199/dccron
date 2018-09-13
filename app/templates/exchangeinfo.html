@@ -23,11 +23,11 @@
                 </div>
                 <div class="form-group">
                   <label>API_KEY</label>
-                  <input type="text" class="form-control"  placeholder="请输入API_KEY" name="{{ exchangeform.apikey.name }}" value="{{ exchangeform.apikey.value }}">
+                  <input type="text" class="form-control"  placeholder="请输入API_KEY" name="{{ exchangeform.apikey.name }}" value="{% if exchangeform.apikey.value %}{{ exchangeform.apikey.value }}{% endif %}">
                 </div>
                 <div class="form-group">
                   <label>SECRET_KEY</label>
-                  <input type="text" class="form-control"  placeholder="请输入SECRET_KEY" name="{{ exchangeform.secretkey.name }}" value="{{ exchangeform.secretkey.value }}">
+                  <input type="text" class="form-control"  placeholder="请输入SECRET_KEY" name="{{ exchangeform.secretkey.name }}" value="{% if exchangeform.secretkey.value %}{{ exchangeform.secretkey.value }}{% endif %}">
                 </div>
                  <div class="form-group">
                   <div class="checkbox">
