@@ -13,6 +13,7 @@ def casttoorder(cast,exchange):
     ex.apiKey = exchange.apikey
     ex.secret = exchange.secretkey
     ex.options['createMarketBuyOrderRequiresPrice'] = False
+    ex.options['marketBuyPrice'] = True
     try:
         cost=cast.cost
         firstsymbol=symbol.split('/')[0]
