@@ -13,7 +13,7 @@ def casttoorder(cast,exchange):
     ex.apiKey = exchange.apikey
     ex.secret = exchange.secretkey
     ex.options['createMarketBuyOrderRequiresPrice'] = False
-    ex.options['marketBuyPrice'] = True
+    ex.options['marketBuyPrice'] = False
     try:
         cost=cast.cost
         firstsymbol=symbol.split('/')[0]
@@ -27,6 +27,9 @@ def casttoorder(cast,exchange):
             if sellorderdata['info']['status'] == 'ok':
                 content='定投收益已达到'+cast.sellpercent+'%,成功卖出'
                 writecastlog(cast.id,content)
+            else:
+                content = '卖出单异常'
+                writecastlog(cast.id, content)
     except Exception as e:
         content = '定投卖出异常:'+str(e)
         writecastlog(cast.id, content)
@@ -34,10 +37,13 @@ def casttoorder(cast,exchange):
 
     try:
         amount=cast.amount
-        buyorderdata=ex.create_market_buy_order(symbol=symbol, amount=amount)
+        buyorderdata=ex.create_market_buy_order(symbol=symbol, amount=amount,params={'cost':amount})
         if buyorderdata['info']['status'] == 'ok':
             cast.cost+=amount
             content = '定投成功买入'+str(amount)+'金额的'+str(symbol.split('/')[1])
+            writecastlog(cast.id, content)
+        else:
+            content = '买入单异常'
             writecastlog(cast.id, content)
     except Exception as e:
         content = '定投买入异常'+str(e)
