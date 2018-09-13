@@ -29,7 +29,7 @@
 
 
                  <button type="submit" class="btn btn-primary">保存</button>
-                 <a class="btn" href="{% url 'exchange' %}">返回</a>
+                 <a class="btn" href="{% url 'dashboard' %}">返回</a>
 
 
               </form>
@@ -38,9 +38,3 @@
           </div>
 
 {% endblock %}
-<script>
-    var check=$("#check").prop("checked")
-    if (check) {
-        $("#check").attr("value","True")
-    }
-</script>

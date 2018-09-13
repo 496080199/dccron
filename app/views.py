@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
 from pytz import timezone
 import json,platform
 
@@ -108,7 +109,19 @@ def dashboard(request):
 
 @login_required
 def exchange(request):
-    exchanges=Exchange.objects.all()
+    exchanges=Exchange.objects.all().order_by('code')
+    search = request.GET.get('search')
+    if search:
+        exchanges=Exchange.objects.filter(Q(code__contains=search)|Q(name__contains=search))
+    else:
+        paginator = Paginator(exchanges, 20)
+        page = request.GET.get('page')
+        try:
+            exchanges = paginator.page(page)
+        except PageNotAnInteger:
+            exchanges = paginator.page(1)
+        except EmptyPage:
+            exchanges = paginator.page(paginator.num_pages)
 
     return render(request, 'exchange.html', {'exchagnes':exchanges})
 
@@ -245,11 +258,7 @@ def cast(request):
     casts=Cast.objects.all().order_by('-ttime')
     search = request.GET.get('search')
     if search:
-        tmpcasts = []
-        for cast in casts:
-            if search in cast.name:
-                tmpcasts.append(cast)
-        casts = tmpcasts
+        casts = Cast.objects.filter(name__contains=search)
     else:
         paginator = Paginator(casts, 20)
         page = request.GET.get('page')
@@ -342,15 +351,12 @@ def castlog(request,cid):
     castlogs=Castlog.objects.filter(cast_id=cid).order_by('-tltime')
     cast=Cast.objects.get(pk=cid)
     search = request.GET.get('search')
-    paginator = Paginator(castlogs, 20)
-    page = request.GET.get('page')
+
     if search:
-        tmpcastlogs=[]
-        for castlog in castlogs:
-            if search in castlog.content or search in str(castlog.tltime):
-                tmpcastlogs.append(castlog)
-        castlogs = tmpcastlogs
+        castlogs = Castlog.objects.filter(Q(content__contains=search)|Q(tltime__in=search))
     else:
+        paginator = Paginator(castlogs, 20)
+        page = request.GET.get('page')
         try:
             castlogs = paginator.page(page)
         except PageNotAnInteger:
@@ -366,11 +372,7 @@ def condition(request):
     conditions=Condition.objects.all().order_by('-ttime')
     search = request.GET.get('search')
     if search:
-        tmpconditions = []
-        for condition in conditions:
-            if search in condition.name:
-                tmpconditions.append(cast)
-                conditions = tmpconditions
+        conditions=Condition.objects.filter(name__contains=search)
     else:
         paginator = Paginator(conditions, 20)
         page = request.GET.get('page')
@@ -461,15 +463,12 @@ def conditionlog(request,cid):
     conditionlogs=Conditionlog.objects.filter(condition_id=cid).order_by('-tltime')
     condition=Condition.objects.get(pk=cid)
     search = request.GET.get('search')
-    paginator = Paginator(conditionlogs, 20)
-    page = request.GET.get('page')
+
     if search:
-        tmpconditionlogs=[]
-        for conditionlog in conditionlogs:
-            if search in conditionlog.content or search in str(conditionlog.tltime):
-                tmpconditionlogs.append(conditionlog)
-                conditionlogs = tmpconditionlogs
+        conditionlogs = Conditionlog.objects.filter(Q(content__contains=search) | Q(tltime__in=search))
     else:
+        paginator = Paginator(conditionlogs, 20)
+        page = request.GET.get('page')
         try:
             conditionlogs = paginator.page(page)
         except PageNotAnInteger:

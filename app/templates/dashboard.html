@@ -75,21 +75,45 @@
         <!-- ./col -->
       </div>
       <div class="row">
-            <div class="col-xs-6">
+            <div class="col-xs-8">
+          <p class="lead">DCcron说明</p>
+
+          <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
+            是否还在高山上惨哭？是否还觉得一觉醒来错过了几百个亿？让DCcron成为你新的解决思路。<br>
+              DCcron是区块链的一个辅助性工具，基于django 2开发，支持binance,okex,huobipro等多平台，提供了定投和条件投两大功能:一个追求长期价值，看好未来，佛系坚守;一个追求最大价值，助你低进高出，游刃有余。<br>
+              本系统为开源项目，仅供学习研究，技术交流，希望能抛砖引玉。可免费参考或使用系统，但因此产生各种风险损失，概不负责。
+          </p>
+        </div>
+      </div>
+      <div class="row">
+          <div class="col-xs-6">
+               <p class="lead">欢迎捐赠</p>
+              <p>BTC地址：18Fd9TBMnqAA4BEeEtHvzKZ3phwE5xVrcr</p>
+              <p>ETH地址：0x8b74e2a75ce6e80663f24fcfd0e48c3eb4b4cae2</p>
+              <p>USDT地址：18JSQhT6XMQZpbzxjjt4jpwznrAnFpcAU3</p>
+            <br>
+          </div>
+      </div>
+      <div class="row">
+            <div class="col-xs-4">
           <p class="lead">系统信息</p>
 
           <div class="table-responsive">
             <table class="table">
               <tbody><tr>
-                <th style="width:50%">系统版本：</th>
+                <th style="width:50%">系统名称：</th>
+                <td>DCcron</td>
+              </tr>
+              <tr>
+                <th>操作系统：</th>
                 <td>{{ system.plateform }}</td>
               </tr>
               <tr>
-                <th>系统架构：</th>
+                <th>架构：</th>
                 <td>{{ system.machine }}</td>
               </tr>
               <tr>
-                <th>系统位数：</th>
+                <th>位数：</th>
                 <td>{{ system.arch }}</td>
               </tr>
               <tr>
@@ -100,15 +124,7 @@
           </div>
         </div>
       </div>
-      <div class="row">
-            <div class="col-xs-12">
-          <p class="lead">DCCRONT说明</p>
 
-          <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
-            文字
-          </p>
-        </div>
-      </div>
 
 
 {% endblock %}

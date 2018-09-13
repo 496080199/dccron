@@ -9,19 +9,120 @@
 - model: app.Exchange
   pk: 1
   fields:
-    code: huobipro
-    name: 火币
+    code: binance
+    name: Binance
     status: false
 - model: app.Exchange
   pk: 2
   fields:
-    code: binance
-    name: 币安
+    code: okex
+    name: OKEx
     status: false
 - model: app.Exchange
   pk: 3
   fields:
-    code: okex
-    name: OKEX
+    code: huobipro
+    name: Huobi
     status: false
-
+- model: app.Exchange
+  pk: 4
+  fields:
+    code: bitfinex
+    name: Bitfinex
+    status: false
+- model: app.Exchange
+  pk: 5
+  fields:
+    code: zb
+    name: ZB
+    status: false
+- model: app.Exchange
+  pk: 6
+  fields:
+    code: bithumb
+    name: Bithumb
+    status: false
+- model: app.Exchange
+  pk: 7
+  fields:
+    code: hitbtc
+    name: HitBTC
+    status: false
+- model: app.Exchange
+  pk: 8
+  fields:
+    code: bitz
+    name: Bit-Z
+    status: false
+- model: app.Exchange
+  pk: 9
+  fields:
+    code: bibox
+    name: Bibox
+    status: false
+- model: app.Exchange
+  pk: 10
+  fields:
+    code: lbank
+    name: LBank
+    status: false
+- model: app.Exchange
+  pk: 11
+  fields:
+    code: bcex
+    name: BCEX
+    status: false
+- model: app.Exchange
+  pk: 12
+  fields:
+    code: coinbasepro
+    name: Coinbase Pro
+    status: false
+- model: app.Exchange
+  pk: 13
+  fields:
+    code: kraken
+    name: Kraken
+    status: false
+- model: app.Exchange
+  pk: 14
+  fields:
+    code: allcoin
+    name: Allcoin
+    status: false
+- model: app.Exchange
+  pk: 15
+  fields:
+    code: bitstamp
+    name: Bitstamp
+    status: false
+- model: app.Exchange
+  pk: 16
+  fields:
+    code: bittrex
+    name: Bittrex
+    status: false
+- model: app.Exchange
+  pk: 17
+  fields:
+    code: bitbank
+    name: bitbank
+    status: false
+- model: app.Exchange
+  pk: 18
+  fields:
+    code: gateio
+    name: Gate.io
+    status: false
+- model: app.Exchange
+  pk: 19
+  fields:
+    code: poloniex
+    name: Poloniex
+    status: false
+- model: app.Exchange
+  pk: 20
+  fields:
+    code: rightbtc
+    name: RightBTC
+    status: false
