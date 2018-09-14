@@ -25,4 +25,4 @@ ADD dccron/settings.py.conf /dccron/dccron/settings.py
 ENV DCINIT 0
 ADD . /dccron/
 
-CMD ["/bin/sh","start.sh","$DCINIT"]
+CMD ["/bin/sh","start.sh"]
