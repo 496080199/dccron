@@ -81,6 +81,9 @@ def conditiontoorder(condition,exchange):
                     content = '已达到价格为' + price + '条件,成功卖出'
                     writeconditionlog(condition.id, content)
                     scconditionstop(condition.id)
+                else:
+                    content = '卖出单异常'
+                    writecastlog(condition.id, content)
 
         elif condition.direction == 'buy':
             if averageprice < price:
@@ -89,6 +92,9 @@ def conditiontoorder(condition,exchange):
                     content = '已按价格为' + averageprice + '条件,成功买入'
                     writeconditionlog(condition.id, content)
                     scconditionstop(condition.id)
+                else:
+                    content = '买入单异常'
+                    writecastlog(condition.id, content)
 
     except Exception as e:
         content = '交易异常' + str(e)
