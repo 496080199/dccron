@@ -1,6 +1,7 @@
 from .models import *
 import ccxt,re
 from decimal import Decimal
+import traceback
 
 def writecastlog(cid,content):
     castlog = Castlog.objects.create(cast_id=cid)
@@ -31,8 +32,8 @@ def casttoorder(cast,exchange):
             else:
                 content = '卖出单异常'
                 writecastlog(cast.id, content)
-    except Exception as e:
-        content = '定投卖出异常:'+str(e)
+    except:
+        content = '定投卖出异常:'+traceback.format_exc()
         writecastlog(cast.id, content)
         pass
 
@@ -47,11 +48,10 @@ def casttoorder(cast,exchange):
         else:
             content = '买入单异常'
             writecastlog(cast.id, content)
-    except Exception as e:
-        import traceback
-        s = traceback.format_exc()
-        content = '定投买入异常'+str(e)
-        writecastlog(cast.id, s)
+    except:
+
+        content = '定投买入异常:'+traceback.format_exc()
+        writecastlog(cast.id, content)
         pass
 
 
@@ -100,7 +100,7 @@ def conditiontoorder(condition,exchange):
                     content = '买入单异常'
                     writecastlog(condition.id, content)
 
-    except Exception as e:
-        content = '交易异常' + str(e)
+    except:
+        content = '交易异常' +traceback.format_exc()
         writeconditionlog(condition.id, content)
         pass
