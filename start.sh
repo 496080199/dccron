@@ -1,3 +1,8 @@
 #!/bin/sh
-
-gunicorn  -b 127.0.0.1:8000 dccron.wsgi:application
+if [[ $1 -eq 1 ]];
+then
+  python manage.py makemigrations
+  python manage.py migrate
+  python manage.py loaddata initial_data.yaml
+fi
+nginx&&gunicorn  -b 0.0.0.0:8000 dccron.wsgi:application
