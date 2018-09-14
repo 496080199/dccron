@@ -24,7 +24,7 @@ def casttoorder(cast,exchange):
         ask = orderbook['asks'][0][0] if len(orderbook['asks']) > 0 else None
         averageprice = Decimal((ask + bid) / 2)
         if averageprice*quatity > cost * (1+(cast.sellpercent/100)):
-            sellorderdata=ex.create_market_sell_order(symbol=symbol, amount=quatity)
+            sellorderdata=ex.create_market_sell_order(symbol=symbol, amount=str(quatity))
             if sellorderdata['info']['status'] == 'ok':
                 content='定投收益已达到'+cast.sellpercent+'%,成功卖出'
                 writecastlog(cast.id,content)
@@ -38,7 +38,7 @@ def casttoorder(cast,exchange):
 
     try:
         amount=cast.amount
-        buyorderdata=ex.create_market_buy_order(symbol=symbol, amount=amount,params={'cost':amount})
+        buyorderdata=ex.create_market_buy_order(symbol=symbol, amount=str(amount),params={'cost':str(amount)})
         if buyorderdata['info']['status'] == 'ok':
             cast.cost+=amount
             cast.save()

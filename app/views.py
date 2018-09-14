@@ -198,11 +198,11 @@ def symboladd(request,exid,symbol):
     esymbol=Symbol.objects.filter(name=symbol,exchange_id=exid)
 
     if esymbol.exists():
-        messages.add_message(request, messages.INFO, exchange.name + str(symbol) + '交易对已存在')
+        messages.add_message(request, messages.INFO, exchange.name +' '+ str(symbol) + '交易对已存在')
     else:
         esymbol=Symbol.objects.create(name=symbol,exchange_id=exid)
         esymbol.save()
-        messages.add_message(request, messages.INFO, exchange.name+str(symbol)+'交易对添加成功')
+        messages.add_message(request, messages.INFO, exchange.name+' '+str(symbol)+'交易对添加成功')
 
 
     return redirect(reverse('symbollist', args=[exid, ]))
