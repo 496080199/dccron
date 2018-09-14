@@ -32,7 +32,7 @@
                   <th>状态</th>
                   <th></th>
                 </tr>
-                {% for exchange in exchagnes %}
+                {% for exchange in exchanges %}
                  <tr>
                   <td>{{ forloop.counter }}</td>
                   <td>{{ exchange.code }}</td>
@@ -45,8 +45,21 @@
 
               </table>
             </div>
+          <div class="box-footer clearfix dataTables_paginate paging_simple_numbers" >
+                    <ul class="pagination">
+                        {% for page_number in exchanges.paginator.page_range %}
+                            {% ifequal page_number  exchanges.number %}
+
+                                <li class="paginate_button active"><a href="#"><strong>{{ page_number }}</strong></a></li>
+                            {% else %}
+                                <li class="paginate_button "><a href="?page={{ page_number }}">{{ page_number }}</a></li>
+                            {% endifequal %}
+                        {% endfor %}
+                    </ul>
+                </div>
             <!-- /.box-body -->
           </div>
+
           <!-- /.box -->
         </div>
       </div>

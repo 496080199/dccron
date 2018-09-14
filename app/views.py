@@ -123,7 +123,7 @@ def exchange(request):
         except EmptyPage:
             exchanges = paginator.page(paginator.num_pages)
 
-    return render(request, 'exchange.html', {'exchagnes':exchanges})
+    return render(request, 'exchange.html', {'exchanges':exchanges})
 
 @login_required
 def exchangeinfo(request,exid):

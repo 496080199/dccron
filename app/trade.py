@@ -14,6 +14,7 @@ def casttoorder(cast,exchange):
     ex.secret = exchange.secretkey
     ex.options['createMarketBuyOrderRequiresPrice'] = False
     ex.options['marketBuyPrice'] = False
+    cast = Cast.objects.get(pk=cast.id)
     try:
         cost=cast.cost
         firstsymbol=symbol.split('/')[0]
@@ -40,6 +41,7 @@ def casttoorder(cast,exchange):
         buyorderdata=ex.create_market_buy_order(symbol=symbol, amount=amount,params={'cost':amount})
         if buyorderdata['info']['status'] == 'ok':
             cast.cost+=amount
+            cast.save()
             content = '定投成功买入'+str(amount)+'金额的'+str(symbol.split('/')[1])
             writecastlog(cast.id, content)
         else:
