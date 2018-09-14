@@ -153,6 +153,8 @@ def symbollist(request,exid):
         usymbols=usymbols.split()
 
         for symbol in usymbols:
+            if '.' in symbol:
+                continue
             symbol=re.sub('/','_',symbol)
             symbols.append(symbol)
 
@@ -176,14 +178,18 @@ def symbollist(request,exid):
 
 @login_required
 def symbolupdate(request,exid):
-    exchange = Exchange.objects.get(pk=exid)
-    ex=eval("ccxt."+exchange.code+"()")
-    ex.apiKey = exchange.apikey
-    ex.secret = exchange.secretkey
-    ex.load_markets()
-    symbols=' '.join(ex.symbols)
-    exchange.symbols=symbols
-    exchange.save()
+    try:
+        exchange = Exchange.objects.get(pk=exid)
+        ex=eval("ccxt."+exchange.code+"()")
+        ex.apiKey = exchange.apikey
+        ex.secret = exchange.secretkey
+        ex.load_markets()
+        symbols=' '.join(ex.symbols)
+        exchange.symbols=symbols
+        exchange.save()
+    except Exception as e:
+        messages.add_message(request, messages.INFO, str(e))
+
     return redirect(reverse('symbollist',args=[exid,]))
 
 @login_required
