@@ -48,8 +48,10 @@ def casttoorder(cast,exchange):
             content = '买入单异常'
             writecastlog(cast.id, content)
     except Exception as e:
+        import traceback
+        s = traceback.format_exc()
         content = '定投买入异常'+str(e)
-        writecastlog(cast.id, content)
+        writecastlog(cast.id, s)
         pass
 
 
