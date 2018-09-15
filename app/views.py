@@ -362,7 +362,7 @@ def castlog(request,cid):
     search = request.GET.get('search')
 
     if search:
-        castlogs = Castlog.objects.filter(Q(content__contains=search)|Q(tltime__in=search))
+        castlogs = Castlog.objects.filter(content__contains=search)
     else:
         paginator = Paginator(castlogs, 20)
         page = request.GET.get('page')
@@ -474,7 +474,7 @@ def conditionlog(request,cid):
     search = request.GET.get('search')
 
     if search:
-        conditionlogs = Conditionlog.objects.filter(Q(content__contains=search) | Q(tltime__in=search))
+        conditionlogs = Conditionlog.objects.filter(content__contains=search)
     else:
         paginator = Paginator(conditionlogs, 20)
         page = request.GET.get('page')
