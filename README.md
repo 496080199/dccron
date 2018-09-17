@@ -78,3 +78,5 @@ docker run -d -p 80:80 -e "DBHOST=(数据库IP)" -e "DBNAME=(数据库名)" -e "
 <br>
 ## 系统演示:<br>
 https://dccron.xiaopao.tk
+## 系统演示:<br>
+本系统为开源项目，仅供学习研究，技术交流，希望能抛砖引玉。可免费参考或使用系统，但因此产生各种风险损失，概不负责。<br>
