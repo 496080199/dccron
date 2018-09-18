@@ -3,6 +3,15 @@
 
 {% block main %}
 
+<script>
+    function changenp() {
+        var a=$('#symbol option:selected').text();
+        var b=a.split('_')[0]
+        var c=a.split('_')[1]
+        $("#setnumber").text(b)
+        $("#setprice").text(c)
+    }
+</script>
 
 
     <div class="box box-success">
@@ -27,7 +36,7 @@
                     </select>
                     {{ conditionform.errors.exid }}
                     <label>选择交易对</label>
-                    <select class="symbol form-control" name="{{ conditionform.symbol.name }}">
+                    <select class="symbol form-control" name="{{ conditionform.symbol.name }}" id="symbol" onchange="javascript:changenp()">
                         <option value="{{ conditionform.symbol.value }}" selected></option>
                     </select>
                     {{ conditionform.errors.symbol }}
@@ -37,12 +46,12 @@
                     {{ conditionform.direction }}
                 </div>
                 <div class="form-group">
-                    <label>数量</label>
+                    <label>数量（单位：<span id="setnumber"></span>）</label>
                     <input class="form-control" type="number" step="1e-20" name="{{ conditionform.number.name }}" value="{% if conditionform.number.value %}{{ conditionform.number.value }}{% endif %}">
                     {{ conditionform.errors.amount }}
                 </div>
                 <div class="form-group">
-                    <label>预期价格</label>
+                    <label>预期价格（单位：<span id="setprice"></span>）</label>
                     <input class="form-control" type="number" step="1e-20" name="{{ conditionform.price.name }}" value="{% if conditionform.price.value %}{{ conditionform.price.value }}{% endif %}">
                 {{ conditionform.errors.price }}
                 </div>

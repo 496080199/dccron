@@ -126,6 +126,15 @@ def exchange(request):
     return render(request, 'exchange.html', {'exchanges':exchanges})
 
 @login_required
+def exchangeupdate(request):
+    excodes=ccxt.exchanges
+    for excode in excodes:
+        ex = eval("ccxt." + excode + "()")
+        Exchange.objects.get_or_create(code=excode,name=ex.name)
+    messages.add_message(request, messages.INFO, '交易所列表更新成功')
+    return redirect(reverse('exchange', args=[]))
+
+@login_required
 def exchangeinfo(request,exid):
     exchange = Exchange.objects.get(pk=exid)
     exchangeform = ExchangeForm(instance=exchange)
@@ -195,14 +204,17 @@ def symbolupdate(request,exid):
 @login_required
 def symboladd(request,exid,symbol):
     exchange = Exchange.objects.get(pk=exid)
-    esymbol=Symbol.objects.filter(name=symbol,exchange_id=exid)
+    if exchange.status == 1:
+        esymbol=Symbol.objects.filter(name=symbol,exchange_id=exid)
 
-    if esymbol.exists():
-        messages.add_message(request, messages.INFO, exchange.name +' '+ str(symbol) + '交易对已存在')
+        if esymbol.exists():
+            messages.add_message(request, messages.INFO, exchange.name +' '+ str(symbol) + '交易对已存在')
+        else:
+            esymbol=Symbol.objects.create(name=symbol,exchange_id=exid)
+            esymbol.save()
+            messages.add_message(request, messages.INFO, exchange.name+' '+str(symbol)+'交易对添加成功')
     else:
-        esymbol=Symbol.objects.create(name=symbol,exchange_id=exid)
-        esymbol.save()
-        messages.add_message(request, messages.INFO, exchange.name+' '+str(symbol)+'交易对添加成功')
+        messages.add_message(request, messages.INFO, str(symbol) + '交易对添加失败，请先启用交易所')
 
 
     return redirect(reverse('symbollist', args=[exid, ]))

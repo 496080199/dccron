@@ -62,21 +62,26 @@ docker pull 496080199/dccron<br>
 docker run -d -p 80:80 -e "DCINIT=1" -e "DBHOST=(数据库IP)" -e "DBNAME=(数据库名)" -e "DBUSER=(数据库账号)" -e "DBPASS=(数据库密码)" 496080199/dccron<br>
 2)正常启动<br>
 docker run -d -p 80:80 -e "DBHOST=(数据库IP)" -e "DBNAME=(数据库名)" -e "DBUSER=(数据库账号)" -e "DBPASS=(数据库密码)" 496080199/dccron<br>
+5.访问<br>
+http://(部署服务器IP):80/<br>
+初始帐号密码：admin/admin<br>
+注：防火墙端口80需要放开<br>
 
 <br>
-## 使用说明：
-1.进入交易所，配置对应平台的API_KEY和并SECRET_KEY，并启用（请自行去对应平台申请）<br>
-2.进入交易所查看支持交易对，首先更新最新的交易对列表，将需要的交易对点击添加<br>
+## 使用说明：<br>
+1.进入交易所，更新最新的交易所列表，配置对应平台的API_KEY和并SECRET_KEY，并启用（请自行去对应平台申请）<br>
+2.进入交易所查看支持交易对，更新最新的交易对列表，将需要的交易对点击添加<br>
 3.进入定投，添加定投任务，根据crontab设置时间，选择交易对，每期投入量，及增长百分百，完成后加载启动任务<br>
 4.进入条件投，添加条件投任务，，选择交易对，交易方向，价格与数量，完成后加载启动任务<br>
 <br>
-## 欢迎捐赠：
+## 欢迎捐赠：<br>
 <p>BTC地址：18Fd9TBMnqAA4BEeEtHvzKZ3phwE5xVrcr</p>
 <p>ETH地址：0x8b74e2a75ce6e80663f24fcfd0e48c3eb4b4cae2</p>
 <p>EOS地址：cljcljcljclj</p>
 <p>USDT地址：18JSQhT6XMQZpbzxjjt4jpwznrAnFpcAU3</p>
 <br>
-## 系统演示:
+## 系统演示:<br>
 https://dccron.xiaopao.tk<br>
-## 声明:
+账号密码：admin/admin<br>
+## 声明:<br>
 本系统为开源项目，仅供学习研究，技术交流，希望能抛砖引玉。可免费参考或使用系统，但因此产生各种风险损失，概不负责。<br>
