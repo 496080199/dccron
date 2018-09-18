@@ -85,3 +85,5 @@ https://dccron.xiaopao.tk<br>
 账号密码：admin/admin<br>
 ## 声明:<br>
 本系统为开源项目，仅供学习研究，技术交流，希望能抛砖引玉。可免费参考或使用系统，但因此产生各种风险损失，概不负责。<br>
+<br>
+<p>社区交流：https://orbit.chat/#/channel/dccron(渠道号为#dccron)</p>
