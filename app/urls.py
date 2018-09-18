@@ -39,6 +39,7 @@ urlpatterns = [
     path('castpause/<int:cid>', views.castpause, name='castpause'),
     path('castlog/<int:cid>', views.castlog, name='castlog'),
     path('condition/', views.condition, name='condition'),
+    path('getsymbolprice/<int:exid>/<slug:symbol>', views.getsymbolprice, name='getsymbolprice'),
     path('conditionadd/', views.conditionadd, name='conditionadd'),
     path('conditionupdate/<int:cid>', views.conditionupdate, name='conditionupdate'),
     path('conditiondel/<int:cid>', views.conditiondel, name='conditiondel'),

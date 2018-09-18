@@ -388,6 +388,21 @@ def castlog(request,cid):
 
     return render(request, 'castlog.html', {'castlogs': castlogs,'cast':cast})
 
+@csrf_exempt
+@login_required
+def getsymbolprice(request,exid,symbol):
+    symbol = re.sub('_', '/', symbol)
+    exchange=Exchange.objects.get(pk=exid)
+    ex = eval("ccxt." + exchange.code + "()")
+    ex.apiKey = exchange.apikey
+    ex.secret = exchange.secretkey
+    orderbook = ex.fetch_order_book(symbol=symbol)
+    bid = orderbook['bids'][0][0] if len(orderbook['bids']) > 0 else None
+    ask = orderbook['asks'][0][0] if len(orderbook['asks']) > 0 else None
+    currentprice = str("%20.10f" % ((ask+bid)/2))
+    return HttpResponse(json.dumps(currentprice), content_type='application/json')
+
+
 @login_required
 def condition(request):
     conditions=Condition.objects.all().order_by('-ttime')
