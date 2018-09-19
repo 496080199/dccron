@@ -58,14 +58,14 @@
                                     <tr role="row" class="odd">
 
                                         <td>{{ condition.name }}</td>
-                                        <td>{% if cast.getrun == 1 %}<span class="label label-success">运行</span>{% else %}<span class="label label-warning">停止</span>{% endif %}</td>
+                                        <td>{% if condition.getrun == 1 %}<span class="label label-success">运行</span>{% else %}<span class="label label-warning">停止</span>{% endif %}</td>
                                         <td><a href="{% url 'conditionlog' condition.id %}">查看</a></td>
                                         <td>{{ condition.ttime }}</td>
                                         <td>
                                             <button type="button" class="btn btn-primary btn-sm" onclick="javascript:window.location.href='{% url 'conditionupdate' condition.id %}'">配置</button>
                                             <button type="button" class="btn btn-success btn-sm" onclick="javascript:window.location.href='{% url 'conditionload' condition.id %}'">加载</button>
                                             <button type="button" class="btn btn-warning btn-sm" onclick="javascript:window.location.href='{% url 'conditionpause' condition.id %}'">暂停</button>
-                                            <button type="button" class="btn btn-danger btn-sm" onclick="javascript:window.location.href='{% url 'conditiondel' condition.id %}'">删除</button>
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="javascript:if (confirm('确定要删除?')) location.href='{% url 'conditiondel' condition.id %}'">删除</button>
                                         </td>
                                     </tr>
                                 {% endfor %}

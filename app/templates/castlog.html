@@ -9,7 +9,7 @@
           <div class="box">
             <div class="box-header">
               <h3 class="box-title">{{ cast.name }}定投日志</h3>
-
+                <button type="button" class="btn btn-danger btn-sm" onclick="javascript:if (confirm('确定要清理全部日志?')) location.href='{% url 'cleancastlog' cast.id %}'">清理日志</button>
               <div class="box-tools">
                 <div class="pull-right">
                     <form action="#" method="get">

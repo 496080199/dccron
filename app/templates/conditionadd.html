@@ -7,13 +7,24 @@
     function changenp() {
         $("#setnumber").empty();
         $("#setprice").empty();
+        $("#setprice1").empty();
+        $("#setava").empty();
+        $("#setava1").empty();
         $("#setcurrentprice").empty();
         var e=$('#exchange option:selected').val();
         var a=$('#symbol option:selected').text();
         var b=a.split('_')[0];
         var c=a.split('_')[1];
         $("#setnumber").text(b);
+        $("#setnumber1").text(b);
         $("#setprice").text(c);
+        $("#setprice1").text(c);
+        $.get("/app/getsymbolava/"+e+'/'+c, function(data){
+            $("#setava").text(data);
+        });
+        $.get("/app/getsymbolava/"+e+'/'+b, function(data){
+            $("#setava1").text(data);
+        });
         $.get("/app/getsymbolprice/"+e+'/'+a, function(data){
             $("#setcurrentprice").text(data);
         });
@@ -44,6 +55,9 @@
                     <select class="symbol form-control" name="{{ conditionform.symbol.name }}" id="symbol" onchange="javascript:changenp()"></select>
                     {{ conditionform.errors.symbol }}
                 </div>
+                <div class="form-group">
+                    <label>可用余额：<span id="setava"></span><span id="setprice"></span>, <span id="setava1"></span><span id="setnumber1"></span></label>
+                </div>
                 <div>
                     <label>选择交易方向</label>
                     {{ conditionform.direction }}
@@ -54,7 +68,7 @@
                     {{ conditionform.errors.amount }}
                 </div>
                 <div class="form-group">
-                    <label>预期价格(当前价格：<span id="setcurrentprice"></span><span id="setprice"></span>）</label>
+                    <label>预期价格(当前价格：<span id="setcurrentprice"></span><span id="setprice1"></span>）</label>
                     <input class="form-control" type="number" step="1e-20" name="{{ conditionform.price.name }}">
                 {{ conditionform.errors.price }}
                 </div>

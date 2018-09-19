@@ -4,6 +4,13 @@ from decimal import Decimal
 import traceback
 
 
+def exlogin(exid):
+    exchange = Exchange.objects.get(pk=exid)
+    ex = eval("ccxt." + exchange.code + "()")
+    ex.apiKey = exchange.apikey
+    ex.secret = exchange.secretkey
+    return ex
+
 def writecastlog(cid, content):
     castlog = Castlog.objects.create(cast_id=cid)
     castlog.content = content

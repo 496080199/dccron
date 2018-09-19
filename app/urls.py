@@ -38,7 +38,9 @@ urlpatterns = [
     path('castload/<int:cid>', views.castload, name='castload'),
     path('castpause/<int:cid>', views.castpause, name='castpause'),
     path('castlog/<int:cid>', views.castlog, name='castlog'),
+    path('cleancastlog/<int:cid>', views.cleancastlog, name='cleancastlog'),
     path('condition/', views.condition, name='condition'),
+    path('getsymbolava/<int:exid>/<slug:symbol>', views.getsymbolava, name='getsymbolava'),
     path('getsymbolprice/<int:exid>/<slug:symbol>', views.getsymbolprice, name='getsymbolprice'),
     path('conditionadd/', views.conditionadd, name='conditionadd'),
     path('conditionupdate/<int:cid>', views.conditionupdate, name='conditionupdate'),
@@ -46,6 +48,7 @@ urlpatterns = [
     path('conditionload/<int:cid>', views.conditionload, name='conditionload'),
     path('conditonpause/<int:cid>', views.conditionpause, name='conditionpause'),
     path('conditonlog/<int:cid>', views.conditionlog, name='conditionlog'),
+    path('cleanconditonlog/<int:cid>', views.cleanconditionlog, name='cleanconditionlog'),
 
 
 

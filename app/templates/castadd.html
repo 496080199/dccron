@@ -5,9 +5,17 @@
 
 <script>
     function changeamount() {
+        $("#setamount").empty();
+        $("#setamount1").empty();
+        $("#setava").empty();
+        var e=$('#exchange option:selected').val();
         var a=$('#symbol option:selected').text();
-        var b=a.split('_')[1]
-        $("#setamount").text(b)
+        var b=a.split('_')[1];
+        $("#setamount").text(b);
+        $("#setamount1").text(b);
+        $.get("/app/getsymbolava/"+e+'/'+b, function(data){
+            $("#setava").text(data);
+        });
     }
 </script>
 
@@ -28,20 +36,23 @@
                 </div>
                 <div class="form-group">
                     <label>cron设置（参考crontab)</label><br>
-                    分:<input type="text" name="{{ castform.minute.name }}" placeholder="例：*  0-59 ">{{ castform.errors.minute }}<br>
-                    时:<input type="text" name="{{ castform.hour.name }}" placeholder="例：*  0-23 ">{{ castform.errors.hour }}<br>
-                    天:<input type="text" name="{{ castform.day.name }}" placeholder="例：*  1-31 ">{{ castform.errors.day }}<br>
+                    分:<input type="text" name="{{ castform.minute.name }}" placeholder="*">{{ castform.errors.minute }}<span>例：&nbsp;*/4 &nbsp;1,2,3&nbsp; 0-59 </span><br>
+                    时:<input type="text" name="{{ castform.hour.name }}" placeholder="*">{{ castform.errors.hour }}<span>例：&nbsp;*/4 &nbsp;1,2,3&nbsp; 0-23 </span><br>
+                    天:<input type="text" name="{{ castform.day.name }}" placeholder="*">{{ castform.errors.day }}<span>例：&nbsp;*/4 &nbsp;1,2,3&nbsp; 0-31 </span><br>
                 </div>
                 <div class="form-group" id="exans">
                     <label>选择交易所</label>
-                    <select class="exchange form-control" name="{{ castform.exid.name }}"></select>
+                    <select class="exchange form-control" name="{{ castform.exid.name }}" id="exchange"></select>
                     {{ castform.errors.exid }}
                     <label>选择交易对</label>
                     <select class="symbol form-control" name="{{ castform.symbol.name }}" id="symbol" onchange="javascript:changeamount()"></select>
                     {{ castform.errors.symbol }}
                 </div>
                 <div class="form-group">
-                    <label>金额（单位：<span id="setamount"></span>）</label>
+                    <label>可用余额：<span id="setava"></span><span id="setamount"></span></label>
+                </div>
+                <div class="form-group">
+                    <label>金额（单位：<span id="setamount1"></span>）</label>
                     <input class="form-control" type="number" step="1e-20" name="{{ castform.amount.name }}"
                            >
                     {{ castform.errors.amount }}

@@ -388,14 +388,28 @@ def castlog(request,cid):
 
     return render(request, 'castlog.html', {'castlogs': castlogs,'cast':cast})
 
+
+@login_required
+def cleancastlog(request, cid):
+    Castlog.objects.filter(cast_id=cid).delete()
+    messages.add_message(request, messages.INFO, '日志已清除')
+
+    return redirect(reverse('castlog', args=[cid, ]))
+
+
+@csrf_exempt
+@login_required
+def getsymbolava(request,exid,symbol):
+    ex=exlogin(exid)
+    balance = ex.fetch_balance()
+    lefsymbol = str(balance[symbol]['free'])
+    return HttpResponse(json.dumps(lefsymbol), content_type='application/json')
+
 @csrf_exempt
 @login_required
 def getsymbolprice(request,exid,symbol):
     symbol = re.sub('_', '/', symbol)
-    exchange=Exchange.objects.get(pk=exid)
-    ex = eval("ccxt." + exchange.code + "()")
-    ex.apiKey = exchange.apikey
-    ex.secret = exchange.secretkey
+    ex = exlogin(exid)
     orderbook = ex.fetch_order_book(symbol=symbol)
     bid = orderbook['bids'][0][0] if len(orderbook['bids']) > 0 else None
     ask = orderbook['asks'][0][0] if len(orderbook['asks']) > 0 else None
@@ -514,3 +528,10 @@ def conditionlog(request,cid):
 
 
     return render(request, 'conditionlog.html', {'conditionlogs': conditionlogs,'condition':condition})
+
+@login_required
+def cleanconditionlog(request,cid):
+    Conditionlog.objects.filter(condition_id=cid).delete()
+    messages.add_message(request, messages.INFO, '日志已清除')
+
+    return redirect(reverse('conditionlog', args=[cid,]))
