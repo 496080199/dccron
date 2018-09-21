@@ -13,7 +13,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 from pytz import timezone
-import json,platform
+import json,platform,os,shelve
 
 
 
@@ -162,7 +162,7 @@ def symbollist(request,exid):
         usymbols=usymbols.split()
 
         for symbol in usymbols:
-            if '.' in symbol:
+            if '.'  in symbol or '$' in symbol:
                 continue
             symbol=re.sub('/','_',symbol)
             symbols.append(symbol)
@@ -188,14 +188,13 @@ def symbollist(request,exid):
 @login_required
 def symbolupdate(request,exid):
     try:
-        exchange = Exchange.objects.get(pk=exid)
-        ex=eval("ccxt."+exchange.code+"()")
-        ex.apiKey = exchange.apikey
-        ex.secret = exchange.secretkey
+        ex=exlogin(exid)
         ex.load_markets()
         symbols=' '.join(ex.symbols)
+        exchange=Exchange.objects.get(pk=exid)
         exchange.symbols=symbols
         exchange.save()
+        messages.add_message(request, messages.INFO, str(exchange.name) + '交易对列表更新成功')
     except Exception as e:
         messages.add_message(request, messages.INFO, str(e))
 
@@ -535,3 +534,25 @@ def cleanconditionlog(request,cid):
     messages.add_message(request, messages.INFO, '日志已清除')
 
     return redirect(reverse('conditionlog', args=[cid,]))
+
+@login_required
+def proxy(request):
+    try:
+        proxyform=ProxyForm()
+        proxy = shelve.open('proxy.conf', flag='c', protocol=2, writeback=False)
+        if request.method == 'POST':
+            proxyform = ProxyForm(request.POST)
+            if proxyform.is_valid():
+                proxyinfo=proxyform.cleaned_data
+                proxy['proxy']=proxyinfo['proxyvalue']
+                proxy.sync()
+                messages.add_message(request, messages.INFO, '代理更新成功')
+        if 'proxy' in proxy.keys():
+            proxyvalue=proxy['proxy']
+        else:
+            proxy['proxy']=''
+            proxy.sync()
+            proxyvalue=''
+    finally:
+        proxy.close()
+    return render(request,'proxy.html',{'proxyform':proxyform,'proxyvalue':proxyvalue})

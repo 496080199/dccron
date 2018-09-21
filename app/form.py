@@ -4,6 +4,9 @@ from captcha.fields import CaptchaField
 
 from .models import *
 
+
+class ProxyForm(forms.Form):
+    proxyvalue=forms.CharField(label='代理值',required=False)
 class LoginForm(forms.Form):
     username=forms.CharField(label='用户名',max_length=100,error_messages={'required': "用户名不能为空"})
     password=forms.CharField(label='密码',widget=forms.PasswordInput(),error_messages={'required': "密码不能为空"})
@@ -52,6 +55,7 @@ class ConditionForm(forms.ModelForm):
     class Meta:
         model=Condition
         fields = ['name','exid','symbol','direction','number','price']
+
 
 
 

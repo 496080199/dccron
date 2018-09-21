@@ -1,2 +1,3 @@
 .idea/*
 dccron/settings.py
+proxy.conf.*

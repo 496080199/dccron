@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+
+{% block main %}
+
+
+    <div class="box box-warning">
+            <div class="box-header with-border">
+              <h3 class="box-title">代理管理</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+              <form role="form" method="post" action="#">
+              {% csrf_token %}
+                <!-- text input -->
+                <div class="form-group">
+                  <label>HTTP代理</label>
+                   <p class="help-block">请根据当前网络状况可选配置，仅支持http.无需http://开头，如127.0.0.1:3128</p>
+                  <input type="text" class="form-control" name="{{ proxyform.proxyvalue.name }}" value="{{ proxyvalue }}" placeholder="请输入代理" >
+                </div>
+
+
+
+                 <button type="submit" class="btn btn-primary">保存</button>
+
+
+              </form>
+            </div>
+            <!-- /.box-body -->
+          </div>
+
+{% endblock %}

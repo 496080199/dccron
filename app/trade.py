@@ -1,12 +1,24 @@
 from .models import *
 import ccxt, re
 from decimal import Decimal
-import traceback
+import traceback,shelve
 
-
+def getproxy(ex):
+    try:
+        myproxy=None
+        proxy = shelve.open('proxy.conf', flag='r', protocol=2, writeback=False)
+        if 'proxy' in proxy.keys() and proxy['proxy'] != '':
+            proxyvalue='http://'+proxy['proxy']
+            myproxy={'http': proxyvalue,'https': proxyvalue}
+        if myproxy is not None:
+            ex.proxies=myproxy
+    finally:
+        proxy.close()
+    return ex
 def exlogin(exid):
     exchange = Exchange.objects.get(pk=exid)
     ex = eval("ccxt." + exchange.code + "()")
+    ex=getproxy(ex)
     ex.apiKey = exchange.apikey
     ex.secret = exchange.secretkey
     return ex
@@ -20,6 +32,7 @@ def writecastlog(cid, content):
 def casttoorder(cast, exchange):
     symbol = re.sub('_', '/', cast.symbol)
     ex = eval("ccxt." + exchange.code + "()")
+    ex = getproxy(ex)
     ex.apiKey = exchange.apikey
     ex.secret = exchange.secretkey
     ex.options['createMarketBuyOrderRequiresPrice'] = False
@@ -84,6 +97,7 @@ def conditiontoorder(condition, exchange):
         price = condition.price
         number = condition.number
         ex = eval("ccxt." + exchange.code + "()")
+        ex = getproxy(ex)
         ex.apiKey = exchange.apikey
         ex.secret = exchange.secretkey
         orderbook = ex.fetch_order_book(symbol=symbol)

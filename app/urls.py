@@ -22,6 +22,7 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('passwd/', views.passwd, name='passwd'),
     path('dashboard/', views.dashboard, name='dashboard'),
+    path('proxy/', views.proxy, name='proxy'),
     path('exchange/', views.exchange, name='exchange'),
     path('exchangeupdate/', views.exchangeupdate, name='exchangeupdate'),
     path('exchangeinfo/<int:exid>', views.exchangeinfo, name='exchangeinfo'),
