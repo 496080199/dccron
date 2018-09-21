@@ -112,7 +112,7 @@ def conditiontoorder(condition, exchange):
                 scconditionstop(condition.id)
             else:
                 content = '卖出单异常'
-                writecastlog(condition.id, content)
+                writeconditionlog(condition.id, content)
 
         elif condition.direction == 'buy' and averageprice < price:
             buyorderdata = ex.create_market_buy_order(symbol=symbol, amount=str(number), params={'price':str(averageprice)})
@@ -122,10 +122,10 @@ def conditiontoorder(condition, exchange):
                 scconditionstop(condition.id)
             else:
                 content = '买入单异常'
-                writecastlog(condition.id, content)
+                writeconditionlog(condition.id, content)
         else:
             content = '未满足下单条件'
-            writecastlog(condition.id, content)
+            writeconditionlog(condition.id, content)
 
     except:
         content = '条件投异常' + traceback.format_exc()
