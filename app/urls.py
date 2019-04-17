@@ -30,6 +30,7 @@ urlpatterns = [
     path('symbolupdate/<int:exid>', views.symbolupdate, name='symbolupdate'),
     path('symboladd/<int:exid>/<slug:symbol>', views.symboladd, name='symboladd'),
     path('symboldel/<int:exid>/<slug:symbol>', views.symboldel, name='symboldel'),
+    path('symbolclean/<int:exid>', views.symbolclean, name='symbolclean'),
     path('symbol/', views.symbol, name='symbol'),
     path('symbolselect/', views.symbolselect, name='symbolselect'),
     path('cast/', views.cast, name='cast'),

@@ -146,7 +146,9 @@ def exchangeinfo(request,exid):
             exchange.secretkey=exchangeinfo['secretkey']
             exchange.status=exchangeinfo['status']
             exchange.save()
-            messages.add_message(request,messages.INFO,exchange.name+'交易所修改成功')
+            messages.add_message(request, messages.INFO, exchange.name + '交易所修改成功')
+            if exchange.status == 0:
+                return redirect(reverse('symbolclean', args=[exid,]))
             return redirect(reverse('exchange', args=[]))
 
 
@@ -221,11 +223,21 @@ def symboladd(request,exid,symbol):
 @login_required
 def symboldel(request,exid,symbol):
     exchange = Exchange.objects.get(pk=exid)
-    symbol = Symbol.objects.get_or_create(name=symbol, exchange_id=exid)[0]
+    symbol = Symbol.objects.get(name=symbol, exchange_id=exid)[0]
     symbol.delete()
     messages.add_message(request, messages.INFO, exchange.name + symbol.name + '交易对删除成功')
     return redirect(reverse('symbol', args=[ ]))
 
+
+@login_required
+def symbolclean(request,exid):
+    exchange = Exchange.objects.get(pk=exid)
+    esymbols = Symbol.objects.filter(exchange_id=exid)
+    if len(esymbols) > 0:
+        for symbol in esymbols:
+            symbol.delete()
+        messages.add_message(request, messages.INFO,exchange.name + '相关交易对已删除')
+    return redirect(reverse('exchange', args=[]))
 
 @login_required
 def symbol(request):

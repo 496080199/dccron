@@ -30,51 +30,57 @@ def writecastlog(cid, content):
 
 
 def casttoorder(cast, exchange):
-    symbol = re.sub('_', '/', cast.symbol)
-    ex = eval("ccxt." + exchange.code + "()")
-    ex = getproxy(ex)
-    ex.apiKey = exchange.apikey
-    ex.secret = exchange.secretkey
-    ex.options['createMarketBuyOrderRequiresPrice'] = False
-    ex.options['marketBuyPrice'] = False
-    cast = Cast.objects.get(pk=cast.id)
-    cost = Decimal(cast.cost)
-    firstsymbol = symbol.split('/')[0]
     try:
-        quatity = Decimal(ex.fetch_balance()[firstsymbol]['free'])
-        orderbook = ex.fetch_order_book(symbol=symbol)
-        bid = orderbook['bids'][0][0] if len(orderbook['bids']) > 0 else None
-        ask = orderbook['asks'][0][0] if len(orderbook['asks']) > 0 else None
-        averageprice = Decimal((ask + bid) / 2)
-        currentvalue = averageprice * quatity
-        if cost == 0.0 and quatity != 0.0:
-            cast.cost = currentvalue
-            cast.save()
-        if currentvalue > cost * Decimal(1 + (cast.sellpercent / 100)):
-            sellorderdata = ex.create_market_sell_order(symbol=symbol, amount=str(quatity))
-            if sellorderdata['info']['status'] == 'ok':
-                content = '定投收益已达到' + str(cast.sellpercent) + '%,成功卖出'
+        symbol = re.sub('_', '/', cast.symbol)
+        ex = eval("ccxt." + exchange.code + "()")
+        if exchange.status == 0:
+            raise RuntimeError('交易所已被禁用，无法执行')
+        ex = getproxy(ex)
+        ex.apiKey = exchange.apikey
+        ex.secret = exchange.secretkey
+        ex.options['createMarketBuyOrderRequiresPrice'] = False
+        ex.options['marketBuyPrice'] = False
+        try:
+            cast = Cast.objects.get(pk=cast.id)
+            cost = Decimal(cast.cost)
+            firstsymbol = symbol.split('/')[0]
+            quatity = Decimal(ex.fetch_balance()[firstsymbol]['free'])
+            orderbook = ex.fetch_order_book(symbol=symbol)
+            bid = orderbook['bids'][0][0] if len(orderbook['bids']) > 0 else None
+            ask = orderbook['asks'][0][0] if len(orderbook['asks']) > 0 else None
+            averageprice = Decimal((ask + bid) / 2)
+            currentvalue = averageprice * quatity
+            if cost == 0.0 and quatity != 0.0:
+                cast.cost = currentvalue
+                cast.save()
+            if currentvalue > cost * Decimal(1 + (cast.sellpercent / 100)):
+                sellorderdata = ex.create_market_sell_order(symbol=symbol, amount=str(quatity))
+                if sellorderdata['info']['status'] == 'ok':
+                    content = '定投收益已达到' + str(cast.sellpercent) + '%,成功卖出'
+                    writecastlog(cast.id, content)
+                else:
+                    content = '卖出单异常:' + sellorderdata['info']['status']
+                    writecastlog(cast.id, content)
+        except:
+            content = '卖出单异常:' + traceback.format_exc()
+            writecastlog(cast.id, content)
+
+        try:
+            amount = Decimal(cast.amount)
+            buyorderdata = ex.create_market_buy_order(symbol=symbol, amount=str(amount), params={'cost': str(amount)})
+            if buyorderdata['info']['status'] == 'ok':
+                cast.cost += amount
+                cast.save()
+                content = '定投成功买入' + str(amount) + '金额的' + str(symbol.split('/')[1])
                 writecastlog(cast.id, content)
             else:
-                content = '卖出单异常:' + sellorderdata['info']['status']
+                content = '买入单异常:' + buyorderdata['info']['status']
                 writecastlog(cast.id, content)
-    except:
-        content = '卖出单异常:' + traceback.format_exc()
-        writecastlog(cast.id, content)
-
-    try:
-        amount = Decimal(cast.amount)
-        buyorderdata = ex.create_market_buy_order(symbol=symbol, amount=str(amount), params={'cost': str(amount)})
-        if buyorderdata['info']['status'] == 'ok':
-            cast.cost += amount
-            cast.save()
-            content = '定投成功买入' + str(amount) + '金额的' + str(symbol.split('/')[1])
-            writecastlog(cast.id, content)
-        else:
-            content = '买入单异常:' + buyorderdata['info']['status']
+        except:
+            content = '买入单异常:' + traceback.format_exc()
             writecastlog(cast.id, content)
     except:
-        content = '买入单异常:' + traceback.format_exc()
+        content = '初始化异常:' + traceback.format_exc()
         writecastlog(cast.id, content)
 
 

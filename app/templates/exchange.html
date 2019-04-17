@@ -37,7 +37,7 @@
                   <td>{{ forloop.counter }}</td>
                   <td>{{ exchange.code }}</td>
                   <td>{{ exchange.name }}</td>
-                  <td><a href="{% url 'symbollist' exchange.id %}">查看</a></td>
+                  <td><a href="{% url 'symbollist' exchange.id %}">查看列表</a></td>
                   <td>{% if exchange.status == True %}<span class="label label-success">启用</span>{% else %}<span class="label label-danger">禁用</span>{% endif %}</td>
                   <td><button type="button" class="btn btn-block btn-info btn-sm" onclick="javascript:window.location.href='{% url 'exchangeinfo' exchange.id %}'">配置</button></td>
                 </tr>

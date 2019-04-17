@@ -52,13 +52,13 @@
                     <label>可用余额：<span id="setava"></span><span id="setamount"></span></label>
                 </div>
                 <div class="form-group">
-                    <label>金额（单位：<span id="setamount1"></span>）</label>
+                    <label>每期金额（单位：<span id="setamount1"></span>）</label>
                     <input class="form-control" type="number" step="1e-20" name="{{ castform.amount.name }}"
                            >
                     {{ castform.errors.amount }}
                 </div>
                 <div class="form-group">
-                    <label>增长百分比(%)</label>
+                    <label>出售时增长百分比(%)</label>
                     <input class="form-control" type="number" step="1e-20" name="{{ castform.sellpercent.name }}"
                            >
                 {{ castform.errors.sellpercent }}
