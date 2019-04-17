@@ -4,7 +4,7 @@ RUN mkdir /dccron&&mkdir /run/nginx
 ADD requirements.txt /dccron/requirements.txt
 WORKDIR /dccron
 
-RUN apk update&&apk add --no-cache build-base tzdata jpeg-dev zlib-dev freetype-dev lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev&& apk add --no-cache mariadb-connector-c-dev nginx&&pip --no-cache-dir install -r requirements.txt&& apk del build-base&&ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+RUN apk update&&apk add --no-cache build-base tzdata jpeg-dev zlib-dev freetype-dev lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev libffi-dev&& apk add --no-cache mariadb-connector-c-dev nginx&&pip --no-cache-dir install -r requirements.txt&& apk del build-base&&ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 EXPOSE 80
 
