@@ -78,7 +78,7 @@ http://(部署服务器IP):80/<br>
 ## 欢迎捐赠：<br>
 <p>BTC地址：18Fd9TBMnqAA4BEeEtHvzKZ3phwE5xVrcr</p>
 <p>ETH地址：0x8b74e2a75ce6e80663f24fcfd0e48c3eb4b4cae2</p>
-<p>EOS地址：cljcljcljclj</p>
+<p>EOS地址：cljcljcolden</p>
 <p>USDT地址：18JSQhT6XMQZpbzxjjt4jpwznrAnFpcAU3</p>
 <br>
 ## 系统演示:<br>
@@ -87,4 +87,4 @@ https://dccron.xiaopao.tk<br>
 ## 声明:<br>
 本系统为开源项目，仅供学习研究，技术交流，希望能抛砖引玉。可免费参考或使用系统，但因此产生各种风险损失，概不负责。<br>
 <br>
-<p>社区交流：https://orbit.chat/#/channel/dccron(渠道号为#dccron)</p>
+<p>tg社区交流：https://t.me/DCcron</p>
